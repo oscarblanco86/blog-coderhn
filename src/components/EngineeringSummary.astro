@@ -1,0 +1,147 @@
+---
+import type { Post } from '../lib/posts';
+import { PILLARS } from '../consts';
+
+interface Props {
+	data: Post['data'];
+}
+
+const { summary, pillar, repo, demo } = Astro.props.data;
+const p = PILLARS[pillar];
+---
+
+{
+	summary && (
+		<aside class="summary" aria-label="Engineering Summary">
+			<header class="mono">
+				<span class="dot" /> engineering-summary.yml
+			</header>
+			<dl>
+				<dt>pilar</dt>
+				<dd>
+					<a href={`/pilares/${pillar}`}>
+						{p.icon} {p.label}
+					</a>
+				</dd>
+				<dt>stack</dt>
+				<dd class="stack">
+					{summary.stack.map((s) => (
+						<span class="tag">{s}</span>
+					))}
+				</dd>
+				<dt>complejidad</dt>
+				<dd>
+					<span class={`level level-${summary.complexity}`}>{summary.complexity}</span>
+				</dd>
+				{summary.coverage && (
+					<>
+						<dt>cobertura</dt>
+						<dd>{summary.coverage}</dd>
+					</>
+				)}
+				{summary.role && (
+					<>
+						<dt>rol</dt>
+						<dd>{summary.role}</dd>
+					</>
+				)}
+				<dt>impacto</dt>
+				<dd class="impact">{summary.impact}</dd>
+				{(repo || demo) && (
+					<>
+						<dt>código</dt>
+						<dd class="links">
+							{repo && (
+								<a href={repo} target="_blank" rel="noopener">
+									repo ↗
+								</a>
+							)}
+							{demo && (
+								<a href={demo} target="_blank" rel="noopener">
+									demo ↗
+								</a>
+							)}
+						</dd>
+					</>
+				)}
+			</dl>
+		</aside>
+	)
+}
+
+<style>
+	.summary {
+		margin: 0 0 2.5em;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		background: var(--bg-soft);
+		overflow: hidden;
+		font-size: 0.88em;
+	}
+	header {
+		padding: 0.5em 1em;
+		border-bottom: 1px solid var(--border);
+		background: var(--bg-elev);
+		color: var(--text-muted);
+		font-size: 0.85em;
+		display: flex;
+		align-items: center;
+		gap: 0.6em;
+	}
+	.dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--accent);
+	}
+	dl {
+		margin: 0;
+		padding: 1em;
+		display: grid;
+		grid-template-columns: max-content 1fr;
+		gap: 0.55em 1.25em;
+	}
+	dt {
+		font-family: var(--font-mono);
+		color: var(--accent);
+		font-size: 0.9em;
+	}
+	dt::after {
+		content: ':';
+	}
+	dd {
+		margin: 0;
+	}
+	.stack {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35em;
+	}
+	.impact {
+		color: var(--heading);
+		font-weight: 700;
+	}
+	.level {
+		font-family: var(--font-mono);
+		text-transform: uppercase;
+		font-size: 0.8em;
+		letter-spacing: 0.05em;
+	}
+	.level-alta,
+	.level-crítica {
+		color: var(--warn);
+	}
+	.links {
+		display: flex;
+		gap: 1em;
+	}
+	@media (max-width: 520px) {
+		dl {
+			grid-template-columns: 1fr;
+			gap: 0.15em;
+		}
+		dd {
+			margin-bottom: 0.6em;
+		}
+	}
+</style>

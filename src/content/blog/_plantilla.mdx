@@ -1,0 +1,56 @@
+---
+# PLANTILLA — los archivos que empiezan con "_" no se publican.
+# Copia este archivo: cp src/content/blog/_plantilla.mdx src/content/blog/mi-slug.mdx
+title: 'Título orientado al problema, no a la herramienta'
+description: 'Una frase: qué problema resolviste y cuál fue el resultado medible.'
+pubDate: '2026-11-04'
+pillar: backend # backend | frontend | calidad | opensource
+tags: ['django', 'docker']
+draft: true
+summary:
+  stack: ['Django', 'PostgreSQL', 'Docker']
+  complexity: media # baja | media | alta | crítica
+  coverage: '85% (pytest)' # opcional
+  role: 'Arquitecto y desarrollador principal' # opcional
+  impact: 'Resultado medible en una línea (ej. p95 de 800 ms → 120 ms)'
+repo: 'https://github.com/oscarblanco86/REPO'
+# demo: 'https://...'
+---
+
+## 1. El problema
+
+¿Qué fallaba, qué era lento o qué necesitaba el negocio? Cuéntalo en términos de impacto
+(usuarios, dinero, tiempo), no de tecnología.
+
+## 2. Las restricciones
+
+- **Tiempo:** …
+- **Recursos / presupuesto:** …
+- **Infraestructura:** …
+- **Requisitos no funcionales:** …
+
+## 3. La solución propuesta (arquitectura)
+
+Decisiones de stack y **por qué** descartaste las alternativas.
+
+```text
+[Cliente] ──HTTPS──▶ [Traefik] ──▶ [App] ──▶ [PostgreSQL]
+```
+
+## 4. Código clave
+
+```ts
+// Un fragmento corto, bien nombrado y con su test al lado.
+```
+
+## 5. Resultados y lecciones aprendidas
+
+| Métrica | Antes | Después |
+| ------- | ----- | ------- |
+| …       | …     | …       |
+
+Qué harías distinto la próxima vez.
+
+## 6. Repositorio / demo
+
+Enlace al código para validar todo lo anterior.

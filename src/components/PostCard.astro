@@ -1,0 +1,77 @@
+---
+import type { Post } from '../lib/posts';
+import { PILLARS } from '../consts';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	post: Post;
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, pillar, tags, draft } = post.data;
+const p = PILLARS[pillar];
+---
+
+<article class="card">
+	<div class="meta mono">
+		<a href={`/pilares/${pillar}`} class="pillar">{p.icon} {p.short}</a>
+		<span>·</span>
+		<FormattedDate date={pubDate} />
+		{draft && <span class="draft">borrador</span>}
+	</div>
+	<h3><a href={`/blog/${post.id}/`}>{title}</a></h3>
+	<p class="muted">{description}</p>
+	{
+		tags.length > 0 && (
+			<div class="tags">
+				{tags.map((t) => (
+					<span class="tag">#{t}</span>
+				))}
+			</div>
+		)
+	}
+</article>
+
+<style>
+	.card {
+		padding: 1.25em 0;
+		border-bottom: 1px solid var(--border);
+	}
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5em;
+		font-size: 0.75em;
+		color: var(--text-muted);
+	}
+	.pillar {
+		color: var(--accent);
+		text-decoration: none;
+	}
+	.draft {
+		color: var(--warn);
+		border: 1px solid currentColor;
+		border-radius: 4px;
+		padding: 0 0.4em;
+	}
+	h3 {
+		margin: 0.3em 0 0.3em;
+		font-size: 1.25em;
+	}
+	h3 a {
+		color: var(--heading);
+		text-decoration: none;
+	}
+	h3 a:hover {
+		color: var(--accent);
+	}
+	p {
+		margin: 0 0 0.6em;
+		font-size: 0.92em;
+	}
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35em;
+	}
+</style>

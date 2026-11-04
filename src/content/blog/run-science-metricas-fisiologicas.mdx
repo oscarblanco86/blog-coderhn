@@ -1,0 +1,93 @@
+---
+title: 'Creando run-science: un paquete modular para calcular VDOT y zonas Karvonen'
+description: 'Cómo diseñé una librería sin dependencias para métricas de entrenamiento de carrera, con fórmulas verificables y pruebas contra tablas de referencia.'
+pubDate: '2026-11-04'
+pillar: opensource
+tags: ['open-source', 'typescript', 'testing', 'ciencia-del-deporte']
+draft: true
+summary:
+  stack: ['TypeScript'] # TODO: confirmar stack real
+  complexity: media
+  coverage: 'TODO' # ej. '100% en módulo de fórmulas (Vitest)'
+  role: 'Autor y mantenedor'
+  impact: 'TODO: resultado medible (tamaño del paquete, precisión vs. tablas de Daniels, adopción…)'
+repo: 'https://github.com/oscarblanco86/run-science' # TODO: verificar URL
+---
+
+{/* BORRADOR — sustituye cada TODO por datos reales antes de quitar `draft: true`. */}
+
+## 1. El problema
+
+Las apps de running calculan ritmos y zonas de frecuencia cardiaca, pero lo hacen como una caja
+negra: no puedes auditar la fórmula, ni reutilizarla en tu propio proyecto (por ejemplo, la
+plataforma de un club o un análisis de datos de Strava).
+
+TODO: ¿qué te llevó a escribirla? ¿Para qué proyecto la necesitabas?
+
+## 2. Las restricciones
+
+- **Cero dependencias en runtime:** el paquete debe poder usarse en navegador, Node, Deno o Bun.
+- **Fórmulas verificables:** cada cálculo debe poder contrastarse con la fuente original
+  (tablas VDOT de Jack Daniels, fórmula de Karvonen).
+- **API pequeña y componible:** funciones puras, sin estado.
+- TODO: otras restricciones reales.
+
+## 3. La solución propuesta (arquitectura)
+
+```text
+run-science/
+├── vdot/        → VDOT a partir de una marca (distancia + tiempo) y ritmos de entrenamiento
+├── hr/          → FC de reserva y zonas Karvonen
+└── units/       → conversión de ritmo / velocidad / distancia
+```
+
+**Decisión clave:** funciones puras que reciben y devuelven valores en unidades del SI, con la
+conversión de unidades aislada en un módulo aparte. Así la lógica fisiológica no se mezcla con el
+formato de presentación.
+
+TODO: ajusta el árbol de módulos al repo real.
+
+## 4. Código clave
+
+La fórmula de Karvonen calcula la FC objetivo de una zona a partir de la frecuencia cardiaca de reserva:
+
+```ts
+/**
+ * FC objetivo = FC reposo + intensidad × (FC máx − FC reposo)
+ * @param intensity fracción entre 0 y 1 (ej. 0.7 = 70 %)
+ */
+export function karvonen(restHr: number, maxHr: number, intensity: number): number {
+	if (maxHr <= restHr) throw new RangeError('maxHr debe ser mayor que restHr');
+	if (intensity < 0 || intensity > 1) throw new RangeError('intensity debe estar entre 0 y 1');
+	return Math.round(restHr + intensity * (maxHr - restHr));
+}
+```
+
+Y su prueba:
+
+```ts
+import { expect, test } from 'vitest';
+import { karvonen } from './hr';
+
+test('zona 2 (60–70 %) para FC reposo 50 y FC máx 190', () => {
+	expect(karvonen(50, 190, 0.6)).toBe(134);
+	expect(karvonen(50, 190, 0.7)).toBe(148);
+});
+```
+
+TODO: reemplaza por el código real de VDOT (la parte más interesante del paquete).
+
+## 5. Resultados y lecciones aprendidas
+
+| Métrica                       | Valor |
+| ----------------------------- | ----- |
+| Tamaño publicado (min + gzip) | TODO  |
+| Dependencias en runtime       | 0     |
+| Cobertura de pruebas          | TODO  |
+| Desviación vs. tablas Daniels | TODO  |
+
+TODO: qué aprendiste (redondeos, validación de entradas, documentación de fuentes…).
+
+## 6. Repositorio
+
+TODO: enlace al repo y, si existe, al paquete en npm/JSR.

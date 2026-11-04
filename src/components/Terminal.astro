@@ -1,0 +1,255 @@
+---
+/**
+ * Terminal interactiva sin dependencias: explora y filtra los artículos.
+ * El índice de posts se serializa en build y el script (vanilla TS) lo consume en el cliente.
+ */
+import { AUTHOR, PILLARS } from '../consts';
+import { getPosts } from '../lib/posts';
+
+const posts = (await getPosts()).map((p) => ({
+	slug: p.id,
+	title: p.data.title,
+	pillar: p.data.pillar,
+	tags: p.data.tags,
+	description: p.data.description,
+}));
+
+const index = {
+	posts,
+	pillars: Object.fromEntries(Object.entries(PILLARS).map(([k, v]) => [k, v.label])),
+	author: { name: AUTHOR.name, role: AUTHOR.role, location: AUTHOR.location, github: AUTHOR.github },
+};
+---
+
+<section class="term" aria-label="Terminal interactiva">
+	<div class="bar mono">
+		<span class="dots"><i></i><i></i><i></i></span>
+		<span>visitor@coderhn: ~/blog</span>
+	</div>
+	<div class="out mono" id="term-out" aria-live="polite"></div>
+	<form class="line mono" id="term-form" autocomplete="off">
+		<label for="term-in" class="ps1">$</label>
+		<input id="term-in" type="text" spellcheck="false" aria-label="Escribe un comando" placeholder="help" />
+	</form>
+</section>
+
+<script type="application/json" id="term-data" set:html={JSON.stringify(index)} />
+
+<script>
+	type Item = { slug: string; title: string; pillar: string; tags: string[]; description: string };
+	type Index = {
+		posts: Item[];
+		pillars: Record<string, string>;
+		author: { name: string; role: string; location: string; github: string };
+	};
+
+	const data: Index = JSON.parse(document.getElementById('term-data')!.textContent || '{}');
+	const out = document.getElementById('term-out')!;
+	const form = document.getElementById('term-form') as HTMLFormElement;
+	const input = document.getElementById('term-in') as HTMLInputElement;
+	const history: string[] = [];
+	let hIdx = 0;
+
+	const esc = (s: string) =>
+		s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+
+	function print(html: string, cls = '') {
+		const div = document.createElement('div');
+		if (cls) div.className = cls;
+		div.innerHTML = html;
+		out.appendChild(div);
+		out.scrollTop = out.scrollHeight;
+	}
+
+	function list(items: Item[]) {
+		if (!items.length) return print('Sin resultados.', 'dim');
+		items.forEach((p, i) =>
+			print(
+				`<span class="dim">[${i + 1}]</span> <span class="acc">${esc(p.pillar)}/</span><a href="/blog/${esc(p.slug)}/">${esc(p.title)}</a>`,
+			),
+		);
+	}
+
+	const commands: Record<string, { help: string; run: (args: string[]) => void }> = {
+		help: {
+			help: 'muestra esta ayuda',
+			run: () =>
+				Object.entries(commands).forEach(([name, c]) =>
+					print(`<span class="acc">${name.padEnd(9)}</span> <span class="dim">${c.help}</span>`),
+				),
+		},
+		ls: {
+			help: 'ls [pilar] — lista artículos',
+			run: ([pillar]) => {
+				if (pillar && !data.pillars[pillar]) return print(`ls: pilar desconocido "${esc(pillar)}". Prueba <span class="acc">pilares</span>`, 'err');
+				list(pillar ? data.posts.filter((p) => p.pillar === pillar) : data.posts);
+			},
+		},
+		pilares: {
+			help: 'muestra los pilares de contenido',
+			run: () =>
+				Object.entries(data.pillars).forEach(([k, label]) => {
+					const n = data.posts.filter((p) => p.pillar === k).length;
+					print(`<a href="/pilares/${k}">${k}</a> <span class="dim">— ${esc(label)} (${n})</span>`);
+				}),
+		},
+		grep: {
+			help: 'grep <texto> — busca en títulos, tags y descripciones',
+			run: (args) => {
+				const q = args.join(' ').toLowerCase();
+				if (!q) return print('uso: grep <texto>', 'err');
+				list(
+					data.posts.filter((p) =>
+						[p.title, p.description, ...p.tags].join(' ').toLowerCase().includes(q),
+					),
+				);
+			},
+		},
+		open: {
+			help: 'open <n|slug> — abre un artículo',
+			run: ([arg]) => {
+				const n = Number(arg);
+				const post = Number.isInteger(n) && n > 0 ? data.posts[n - 1] : data.posts.find((p) => p.slug === arg);
+				if (!post) return print(`open: no encontrado "${esc(arg ?? '')}"`, 'err');
+				print(`abriendo ${esc(post.slug)}…`, 'dim');
+				location.href = `/blog/${post.slug}/`;
+			},
+		},
+		whoami: {
+			help: 'quién escribe este blog',
+			run: () => {
+				print(`<span class="acc">${esc(data.author.name)}</span> — ${esc(data.author.location)}`);
+				print(esc(data.author.role), 'dim');
+				print(`<a href="${esc(data.author.github)}" target="_blank" rel="noopener">${esc(data.author.github)}</a> · <a href="/about">/about</a>`);
+			},
+		},
+		clear: { help: 'limpia la pantalla', run: () => (out.innerHTML = '') },
+	};
+	const aliases: Record<string, string> = { cat: 'open', cd: 'ls', find: 'grep', '?': 'help' };
+
+	function exec(raw: string) {
+		const line = raw.trim();
+		print(`<span class="acc">$</span> ${esc(line)}`, 'cmd');
+		if (!line) return;
+		history.push(line);
+		hIdx = history.length;
+		const [name, ...args] = line.split(/\s+/);
+		const cmd = commands[aliases[name] ?? name];
+		cmd ? cmd.run(args) : print(`${esc(name)}: comando no encontrado. Escribe <span class="acc">help</span>`, 'err');
+	}
+
+	form.addEventListener('submit', (e) => {
+		e.preventDefault();
+		exec(input.value);
+		input.value = '';
+	});
+
+	input.addEventListener('keydown', (e) => {
+		if (e.key === 'ArrowUp' && hIdx > 0) {
+			input.value = history[--hIdx];
+			e.preventDefault();
+		} else if (e.key === 'ArrowDown') {
+			hIdx = Math.min(history.length, hIdx + 1);
+			input.value = history[hIdx] ?? '';
+			e.preventDefault();
+		} else if (e.key === 'Tab') {
+			const match = Object.keys(commands).find((c) => c.startsWith(input.value) && input.value);
+			if (match) {
+				input.value = match + ' ';
+				e.preventDefault();
+			}
+		}
+	});
+
+	out.closest('.term')!.addEventListener('click', (e) => {
+		if (!(e.target as HTMLElement).closest('a')) input.focus({ preventScroll: true });
+	});
+
+	print('Bienvenido. Escribe <span class="acc">help</span> para ver comandos, o prueba <span class="acc">ls</span>.', 'dim');
+</script>
+
+<style>
+	.term {
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		background: var(--code-bg);
+		color: #c9d1d9;
+		overflow: hidden;
+		font-size: 0.8em;
+		box-shadow: 0 12px 40px rgb(0 0 0 / 25%);
+		--acc: #3fb950;
+		--dim: #7d8590;
+	}
+	.bar {
+		display: flex;
+		align-items: center;
+		gap: 1em;
+		padding: 0.55em 0.9em;
+		background: #161b22;
+		color: var(--dim);
+		font-size: 0.85em;
+		border-bottom: 1px solid #21262d;
+	}
+	.dots {
+		display: flex;
+		gap: 6px;
+	}
+	.dots i {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: #30363d;
+	}
+	.dots i:first-child {
+		background: #f85149;
+	}
+	.dots i:nth-child(2) {
+		background: #d29922;
+	}
+	.dots i:nth-child(3) {
+		background: #3fb950;
+	}
+	.out {
+		height: 220px;
+		overflow-y: auto;
+		padding: 0.9em 1em 0;
+		line-height: 1.6;
+		white-space: pre-wrap;
+	}
+	.line {
+		display: flex;
+		gap: 0.6em;
+		padding: 0.3em 1em 0.9em;
+	}
+	.ps1 {
+		color: var(--acc);
+	}
+	input {
+		flex: 1;
+		min-width: 0;
+		background: transparent;
+		border: none;
+		outline: none;
+		color: inherit;
+		font: inherit;
+		caret-color: var(--acc);
+	}
+	input::placeholder {
+		color: #484f58;
+	}
+	.out :global(a) {
+		color: #58a6ff;
+	}
+	.out :global(.acc) {
+		color: var(--acc);
+	}
+	.out :global(.dim) {
+		color: var(--dim);
+	}
+	.out :global(.err) {
+		color: #f85149;
+	}
+	.out :global(.cmd) {
+		margin-top: 0.4em;
+	}
+</style>

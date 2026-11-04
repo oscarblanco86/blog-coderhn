@@ -1,63 +1,38 @@
-# Astro Starter Kit: Blog
+# blog.coderhn.dev
+
+Blog técnico de Oscar Blanco: casos de estudio de arquitectura backend, DevOps, rendimiento web y
+gestión de calidad. Hecho con Astro + MDX y sin frameworks de UI en el cliente.
+
+## Comandos
+
+| Comando         | Acción                                      |
+| --------------- | ------------------------------------------- |
+| `bun install`   | Instala dependencias                        |
+| `bun run dev`   | Servidor local en `localhost:4321` (muestra borradores) |
+| `bun run build` | Build de producción en `./dist/` (excluye borradores) |
+| `bun run preview` | Previsualiza el build                     |
+
+## Escribir un post
 
 ```sh
-bun create astro@latest -- --template blog
+cp src/content/blog/_plantilla.mdx src/content/blog/mi-nuevo-post.mdx
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+1. Rellena el frontmatter: `pillar` (`backend` | `frontend` | `calidad` | `opensource`), `tags` y el
+   bloque `summary` (es la ficha **Engineering Summary** que aparece al inicio del post).
+2. Sigue la estructura: Problema → Restricciones → Arquitectura → Código clave → Resultados → Repo.
+3. Mientras tenga `draft: true` solo se verá en `bun run dev`. Quítalo para publicar.
 
-Features:
+Los archivos que empiezan con `_` nunca se publican.
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+## Dónde personalizar
 
-## 🚀 Project Structure
+- `src/consts.ts`: nombre, enlaces (LinkedIn, email), pilares de contenido.
+- `src/styles/global.css`: tokens de color (tema oscuro y claro).
+- `src/components/Terminal.astro`: comandos de la terminal de la portada.
+- `src/content.config.ts`: esquema del frontmatter.
 
-Inside of your Astro project, you'll see the following folders and files:
+## Analítica
 
-```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `bun install`             | Installs dependencies                            |
-| `bun dev`             | Starts local dev server at `localhost:4321`      |
-| `bun build`           | Build your production site to `./dist/`          |
-| `bun preview`         | Preview your build locally, before deploying     |
-| `bun astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `bun astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+Cloudflare Web Analytics (sin cookies). Define `PUBLIC_CF_ANALYTICS_TOKEN` en las variables de
+entorno de Netlify/Vercel; el script solo se inyecta en producción y si el token existe.

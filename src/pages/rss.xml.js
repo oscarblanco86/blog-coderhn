@@ -1,15 +1,19 @@
-import { getCollection } from 'astro:content';
 import rss from '@astrojs/rss';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getPosts } from '../lib/posts';
 
 export async function GET(context) {
-	const posts = await getCollection('blog');
+	const posts = await getPosts();
 	return rss({
 		title: SITE_TITLE,
 		description: SITE_DESCRIPTION,
 		site: context.site,
+		customData: '<language>es</language>',
 		items: posts.map((post) => ({
-			...post.data,
+			title: post.data.title,
+			description: post.data.description,
+			pubDate: post.data.pubDate,
+			categories: [post.data.pillar, ...post.data.tags],
 			link: `/blog/${post.id}/`,
 		})),
 	});
