@@ -1,0 +1,79 @@
+---
+title: 'Docker: from a 1 GB image to an 80 MB one (and understanding why)'
+description: 'Docker explained through a measurable case: multi-stage builds, layer caching and .dockerignore applied to a real app.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: backend
+tags: ['my-stack-series', 'docker', 'devops', 'containers']
+draft: true
+summary:
+  stack: ['Docker', 'Docker Compose', 'Python']
+  complexity: media
+  role: 'Author'
+  impact: 'TODO: e.g. image 1.1 GB → 80 MB · cached build 90 s → 6 s'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Docker — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/docker.mdx. */}
+
+## 1. Why Docker (in one sentence)
+
+TODO: Docker turns "works on my machine" into "works on any machine", but a poorly built image is
+slow to build, heavy to deploy and insecure.
+
+## 2. The starting point (what almost everyone writes)
+
+```dockerfile
+FROM python:3.13
+COPY . /app
+WORKDIR /app
+RUN pip install -r requirements.txt
+CMD ["python", "app.py"]
+```
+
+TODO: measure size and build time.
+
+## 3. Step-by-step optimization
+
+### 3.1 `.dockerignore`
+
+### 3.2 Slim base image
+
+### 3.3 Layer order to take advantage of the cache
+
+### 3.4 Multi-stage build
+
+```dockerfile
+FROM python:3.13-slim AS build
+WORKDIR /app
+COPY requirements.txt .
+RUN pip wheel --wheel-dir /wheels -r requirements.txt
+
+FROM python:3.13-slim
+RUN useradd --create-home app
+WORKDIR /app
+COPY --from=build /wheels /wheels
+RUN pip install --no-cache-dir /wheels/* && rm -rf /wheels
+COPY . .
+USER app
+CMD ["python", "app.py"]
+```
+
+### 3.5 Non-root user
+
+## 4. Results
+
+| Step | Size | Build (no cache) | Build (cached) |
+| ---- | ---- | ---------------- | -------------- |
+| Initial | TODO | TODO | TODO |
+| .dockerignore | TODO | TODO | TODO |
+| slim | TODO | TODO | TODO |
+| multi-stage | TODO | TODO | TODO |
+
+## 5. Mistakes I made
+
+- TODO: copying `.env` into the image / `latest` in production / running as root.
+
+## 6. Repository
+
+TODO: one commit per step so readers can `git checkout` each stage.

@@ -1,12 +1,16 @@
 ---
 import type { Post } from '../lib/posts';
 import { PILLARS } from '../consts';
+import { localizePath, useTranslations, type Lang } from '../i18n/ui';
 
 interface Props {
 	data: Post['data'];
+	lang: Lang;
 }
 
+const { lang } = Astro.props;
 const { summary, pillar, repo, demo } = Astro.props.data;
+const t = useTranslations(lang);
 const p = PILLARS[pillar];
 ---
 
@@ -17,10 +21,10 @@ const p = PILLARS[pillar];
 				<span class="dot" /> engineering-summary.yml
 			</header>
 			<dl>
-				<dt>pilar</dt>
+				<dt>{t('summary.pillar')}</dt>
 				<dd>
-					<a href={`/pilares/${pillar}`}>
-						{p.icon} {p.label}
+					<a href={localizePath(`/pilares/${pillar}`, lang)}>
+						{p.icon} {p.label[lang]}
 					</a>
 				</dd>
 				<dt>stack</dt>
@@ -29,27 +33,27 @@ const p = PILLARS[pillar];
 						<span class="tag">{s}</span>
 					))}
 				</dd>
-				<dt>complejidad</dt>
+				<dt>{t('summary.complexity')}</dt>
 				<dd>
-					<span class={`level level-${summary.complexity}`}>{summary.complexity}</span>
+					<span class={`level level-${summary.complexity}`}>{t(`complexity.${summary.complexity}`)}</span>
 				</dd>
 				{summary.coverage && (
 					<>
-						<dt>cobertura</dt>
+						<dt>{t('summary.coverage')}</dt>
 						<dd>{summary.coverage}</dd>
 					</>
 				)}
 				{summary.role && (
 					<>
-						<dt>rol</dt>
+						<dt>{t('summary.role')}</dt>
 						<dd>{summary.role}</dd>
 					</>
 				)}
-				<dt>impacto</dt>
+				<dt>{t('summary.impact')}</dt>
 				<dd class="impact">{summary.impact}</dd>
 				{(repo || demo) && (
 					<>
-						<dt>código</dt>
+						<dt>{t('summary.code')}</dt>
 						<dd class="links">
 							{repo && (
 								<a href={repo} target="_blank" rel="noopener">

@@ -1,0 +1,74 @@
+---
+title: 'Vue 3: a pace calculator for runners (and how reactivity works under the hood)'
+description: "Composition API, composables and Vue's reactivity system explained by building a real tool with the run-science package."
+pubDate: '2026-11-08' # TODO: real date
+pillar: frontend
+tags: ['my-stack-series', 'vue', 'composition-api', 'typescript']
+draft: true
+summary:
+  stack: ['Vue 3', 'TypeScript', 'Vite', 'run-science']
+  complexity: media
+  role: 'Author'
+  impact: 'TODO: e.g. calculator usable on a phone · TODO KB of JS'
+repo: 'https://github.com/oscarblanco86/TODO'
+demo: 'https://TODO.example.com'
+---
+
+{/* DRAFT · "My stack" series · Vue — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/vue.mdx. */}
+
+## 1. Why Vue (in one sentence)
+
+TODO: templates that look like HTML, fine-grained reactivity without thinking about re-renders,
+and a gentle learning curve.
+
+## 2. Creating the project
+
+```bash
+bun create vue@latest paces
+cd paces
+bun add run-science   # TODO: real package name
+```
+
+## 3. The composable
+
+```ts
+// src/composables/useTrainingPaces.ts
+import { computed, ref } from 'vue';
+// import { vdot, trainingPaces } from 'run-science'; // TODO
+
+export function useTrainingPaces() {
+	const distanceM = ref(10_000);
+	const timeS = ref(45 * 60);
+	const score = computed(() => 0 /* TODO: vdot(distanceM.value, timeS.value) */);
+	const paces = computed(() => [] /* TODO: trainingPaces(score.value) */);
+	return { distanceM, timeS, score, paces };
+}
+```
+
+## 4. The component
+
+```vue
+<script setup lang="ts">
+import { useTrainingPaces } from './composables/useTrainingPaces';
+const { distanceM, timeS, score } = useTrainingPaces();
+</script>
+
+<template>
+	<label>Distance (m) <input v-model.number="distanceM" type="number" /></label>
+	<label>Time (s) <input v-model.number="timeS" type="number" /></label>
+	<p>VDOT: {{ score.toFixed(1) }}</p>
+</template>
+```
+
+## 5. Why does it update by itself? (reactivity in 20 lines)
+
+TODO: mini implementation with Proxy and the dependency graph.
+
+## 6. Mistakes I made
+
+- TODO: destructuring a `reactive()` and losing reactivity / forgetting `.value` in the script.
+
+## 7. Repository and demo
+
+TODO

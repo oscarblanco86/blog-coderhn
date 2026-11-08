@@ -1,0 +1,99 @@
+---
+title: 'Expo: una app que usa los sensores del teléfono para medir tu cadencia al correr'
+description: 'React Native con Expo usando el acelerómetro: de la idea a una app instalable en tu teléfono, sin tocar Xcode ni Android Studio.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: frontend
+tags: ['serie-mi-stack', 'expo', 'react-native', 'mobile']
+draft: true
+summary:
+  stack: ['Expo', 'React Native', 'TypeScript', 'expo-sensors']
+  complexity: media
+  role: 'Autor'
+  impact: 'TODO: ej. cadencia con error < 3 ppm vs. reloj GPS'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Expo
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Contador de cadencia con el acelerómetro"
+   expo-sensors (Accelerometer), detección de picos para contar pasos
+   por minuto, feedback con vibración (expo-haptics) si bajas de la
+   cadencia objetivo. Validar contra un reloj deportivo.
+   🎬 Video (8–10 min): grabar corriendo con el teléfono; pantalla
+   dividida app vs. reloj. Gráfico de la señal cruda del acelerómetro
+   y cómo se convierte en pasos.
+
+B) DEMOSTRAR HABILIDAD — "Del código a la tienda, profesional"
+   EAS Build (perfiles dev/preview/production), EAS Update para
+   actualizaciones OTA, variables de entorno, CI con GitHub Actions.
+   🎬 Video (8 min): cambiar un texto → push → la app instalada en el
+   teléfono se actualiza sola sin pasar por la tienda.
+
+C) ÚTIL PARA EL USUARIO — "Una base de código, tres plataformas"
+   Expo Router con web + iOS + Android; tabla de qué APIs funcionan en
+   cada plataforma y cómo hacer fallback.
+   🎬 Video (5–6 min): misma app abierta en navegador, Android e iOS
+   a la vez; un cambio se ve en los tres.
+
+Recomendada: A (muy visual, original y conecta con la temática running).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Expo (en una frase)
+
+TODO: me deja usar lo que ya sé de React para tener una app nativa en el teléfono en minutos,
+con acceso a sensores sin escribir código nativo.
+
+{/* 🎬 Escena: correr con el teléfono, la app vibra al bajar la cadencia. */}
+
+## 2. Crear el proyecto
+
+```bash
+npx create-expo-app@latest cadencia
+cd cadencia
+npx expo install expo-sensors expo-haptics
+npx expo start   # escanear el QR con Expo Go
+```
+
+## 3. Leer el acelerómetro
+
+```tsx
+import { Accelerometer } from 'expo-sensors';
+import { useEffect, useState } from 'react';
+
+export function useAcceleration(intervalMs = 20) {
+	const [sample, setSample] = useState({ x: 0, y: 0, z: 0 });
+	useEffect(() => {
+		Accelerometer.setUpdateInterval(intervalMs);
+		const sub = Accelerometer.addListener(setSample);
+		return () => sub.remove();
+	}, [intervalMs]);
+	return sample;
+}
+```
+
+## 4. De la señal a los pasos
+
+TODO: magnitud del vector, filtro paso bajo, detección de picos con umbral y tiempo mínimo
+entre pasos. Incluir gráfico de la señal.
+
+{/* 🎬 Escena: gráfico de la señal cruda vs. filtrada con los picos marcados. */}
+
+## 5. Validación
+
+| Ritmo | Reloj (ppm) | App (ppm) | Error |
+| ----- | ----------- | --------- | ----- |
+| Suave | TODO | TODO | TODO |
+| Tempo | TODO | TODO | TODO |
+
+## 6. Errores que cometí
+
+- TODO: frecuencia de muestreo demasiado baja / sensores pausados con la pantalla bloqueada.
+
+## 7. Repositorio
+
+TODO

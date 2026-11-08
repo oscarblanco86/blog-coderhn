@@ -1,0 +1,62 @@
+---
+title: 'Warp Terminal: turning your project runbooks into one-click workflows'
+description: "How I use Warp so that starting, testing and debugging a project no longer depends on someone's memory."
+pubDate: '2026-11-08' # TODO: real date
+pillar: backend
+tags: ['my-stack-series', 'warp', 'terminal', 'productivity']
+draft: true
+summary:
+  stack: ['Warp', 'zsh', 'YAML']
+  complexity: baja
+  role: 'Author'
+  impact: 'TODO: e.g. repo onboarding from 1 h → 10 min'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Warp — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/warp-terminal.mdx. */}
+
+## 1. Why Warp (in one sentence)
+
+TODO: the terminal is where I spend most hours; Warp lets me **store knowledge** (workflows)
+instead of relying on my command history.
+
+## 2. Minimal install
+
+```bash
+# TODO: current install command for Linux (deb/rpm/AppImage)
+```
+
+## 3. From README to workflow
+
+Before (README):
+
+```text
+1. docker compose up -d db
+2. export DATABASE_URL=...
+3. python manage.py migrate
+4. python manage.py runserver 0.0.0.0:8000
+```
+
+After (parameterized workflow):
+
+```yaml
+# TODO: validate against Warp's current workflow format
+name: Start project
+command: docker compose up -d db && python manage.py migrate && python manage.py runserver 0.0.0.0:{{port}}
+arguments:
+  - name: port
+    default_value: '8000'
+```
+
+## 4. Launch configuration: three panes in one click
+
+TODO: launch configuration YAML and a screenshot of the result.
+
+## 5. Mistakes I made
+
+- TODO: storing secrets in a shared workflow / workflows that assume absolute paths.
+
+## 6. Repository
+
+TODO: sample `.warp/` folder ready to copy.

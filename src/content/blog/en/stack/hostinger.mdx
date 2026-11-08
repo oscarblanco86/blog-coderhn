@@ -1,0 +1,58 @@
+---
+title: 'Hostinger as the hub of my domain: one DNS, many projects, zero chaos'
+description: 'How I organize coderhn.dev and its subdomains (blog, apps, APIs) with Hostinger as registrar and DNS, even though each project lives on a different host.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: backend
+tags: ['my-stack-series', 'hostinger', 'dns', 'domains', 'devops']
+draft: true
+summary:
+  stack: ['Hostinger', 'DNS', 'Netlify', 'TODO: VPS']
+  complexity: baja
+  role: 'Author'
+  impact: 'TODO: e.g. N subdomains across N providers managed from one panel'
+---
+
+{/* DRAFT · "My stack" series · Hostinger — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/hostinger.mdx. */}
+
+## 1. Why Hostinger (in one sentence)
+
+TODO: domain pricing and a simple DNS panel; I don't need to host everything there to benefit
+from it.
+
+## 2. The map of my domain
+
+| Subdomain | Points to | Record type |
+| --------- | --------- | ----------- |
+| coderhn.dev | TODO | A / ALIAS |
+| blog.coderhn.dev | Netlify | CNAME |
+| mathkids.coderhn.dev | TODO | TODO |
+| TODO | TODO | TODO |
+
+## 3. The record types I actually use
+
+- **A / AAAA:** TODO
+- **CNAME:** TODO
+- **TXT:** domain verification, SPF. TODO
+- **MX:** TODO
+
+## 4. Creating a subdomain and verifying it
+
+```bash
+dig +short blog.coderhn.dev CNAME
+dig +short blog.coderhn.dev
+```
+
+TODO: TTL and why it sometimes "doesn't work" during propagation.
+
+## 5. DNS documented as code
+
+TODO: keep a `dns.md` table in a private repo with every record and its purpose.
+
+## 6. Mistakes I made
+
+- TODO: deleting a TXT verification record / a high TTL right before a migration.
+
+## 7. Resources
+
+TODO

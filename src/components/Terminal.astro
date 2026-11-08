@@ -4,10 +4,58 @@
  * El índice de posts se serializa en build y el script (vanilla TS) lo consume en el cliente.
  */
 import { AUTHOR, PILLARS } from '../consts';
-import { getPosts } from '../lib/posts';
+import { localizePath, type Lang } from '../i18n/ui';
+import { getPosts, postUrl } from '../lib/posts';
 
-const posts = (await getPosts()).map((p) => ({
-	slug: p.id,
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+
+// Textos de la terminal por idioma. {x} se reemplaza en el cliente.
+const STRINGS = {
+	es: {
+		aria: 'Terminal interactiva',
+		inputAria: 'Escribe un comando',
+		welcome: 'Bienvenido. Escribe <span class="acc">help</span> para ver comandos, o prueba <span class="acc">ls</span>.',
+		noResults: 'Sin resultados.',
+		help: 'muestra esta ayuda',
+		ls: 'ls [pilar] — lista artículos',
+		lsUnknown: 'ls: pilar desconocido "{x}". Prueba <span class="acc">pilares</span>',
+		pillars: 'muestra los pilares de contenido',
+		grep: 'grep <texto> — busca en títulos, tags y descripciones',
+		grepUsage: 'uso: grep <texto>',
+		open: 'open <n|slug> — abre un artículo',
+		openNotFound: 'open: no encontrado "{x}"',
+		opening: 'abriendo {x}…',
+		whoami: 'quién escribe este blog',
+		clear: 'limpia la pantalla',
+		notFound: '{x}: comando no encontrado. Escribe <span class="acc">help</span>',
+	},
+	en: {
+		aria: 'Interactive terminal',
+		inputAria: 'Type a command',
+		welcome: 'Welcome. Type <span class="acc">help</span> to list commands, or try <span class="acc">ls</span>.',
+		noResults: 'No results.',
+		help: 'show this help',
+		ls: 'ls [pillar] — list articles',
+		lsUnknown: 'ls: unknown pillar "{x}". Try <span class="acc">pillars</span>',
+		pillars: 'show the content pillars',
+		grep: 'grep <text> — search titles, tags and descriptions',
+		grepUsage: 'usage: grep <text>',
+		open: 'open <n|slug> — open an article',
+		openNotFound: 'open: not found "{x}"',
+		opening: 'opening {x}…',
+		whoami: 'who writes this blog',
+		clear: 'clear the screen',
+		notFound: '{x}: command not found. Type <span class="acc">help</span>',
+	},
+} satisfies Record<Lang, Record<string, string>>;
+const strings = STRINGS[lang];
+
+const posts = (await getPosts(lang)).map((p) => ({
+	slug: p.id.split('/').slice(1).join('/'),
+	url: postUrl(p),
 	title: p.data.title,
 	pillar: p.data.pillar,
 	tags: p.data.tags,
@@ -16,12 +64,15 @@ const posts = (await getPosts()).map((p) => ({
 
 const index = {
 	posts,
-	pillars: Object.fromEntries(Object.entries(PILLARS).map(([k, v]) => [k, v.label])),
+	pillars: Object.fromEntries(Object.entries(PILLARS).map(([k, v]) => [k, v.label[lang]])),
+	pillarsCmd: lang === 'es' ? 'pilares' : 'pillars',
+	base: localizePath('/', lang),
+	s: strings,
 	author: { name: AUTHOR.name, role: AUTHOR.role, location: AUTHOR.location, github: AUTHOR.github },
 };
 ---
 
-<section class="term" aria-label="Terminal interactiva">
+<section class="term" aria-label={strings.aria}>
 	<div class="bar mono">
 		<span class="dots"><i></i><i></i><i></i></span>
 		<span>visitor@coderhn: ~/blog</span>
@@ -29,17 +80,20 @@ const index = {
 	<div class="out mono" id="term-out" aria-live="polite"></div>
 	<form class="line mono" id="term-form" autocomplete="off">
 		<label for="term-in" class="ps1">$</label>
-		<input id="term-in" type="text" spellcheck="false" aria-label="Escribe un comando" placeholder="help" />
+		<input id="term-in" type="text" spellcheck="false" aria-label={strings.inputAria} placeholder="help" />
 	</form>
 </section>
 
 <script type="application/json" id="term-data" set:html={JSON.stringify(index)} />
 
 <script>
-	type Item = { slug: string; title: string; pillar: string; tags: string[]; description: string };
+	type Item = { slug: string; url: string; title: string; pillar: string; tags: string[]; description: string };
 	type Index = {
 		posts: Item[];
 		pillars: Record<string, string>;
+		pillarsCmd: string;
+		base: string;
+		s: Record<string, string>;
 		author: { name: string; role: string; location: string; github: string };
 	};
 
@@ -49,6 +103,9 @@ const index = {
 	const input = document.getElementById('term-in') as HTMLInputElement;
 	const history: string[] = [];
 	let hIdx = 0;
+	const s = data.s;
+	const fmt = (tpl: string, x: string) => tpl.replace('{x}', x);
+	const base = data.base; // "/" o "/en/"
 
 	const esc = (s: string) =>
 		s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
@@ -62,42 +119,42 @@ const index = {
 	}
 
 	function list(items: Item[]) {
-		if (!items.length) return print('Sin resultados.', 'dim');
+		if (!items.length) return print(s.noResults, 'dim');
 		items.forEach((p, i) =>
 			print(
-				`<span class="dim">[${i + 1}]</span> <span class="acc">${esc(p.pillar)}/</span><a href="/blog/${esc(p.slug)}/">${esc(p.title)}</a>`,
+				`<span class="dim">[${i + 1}]</span> <span class="acc">${esc(p.pillar)}/</span><a href="${esc(p.url)}">${esc(p.title)}</a>`,
 			),
 		);
 	}
 
 	const commands: Record<string, { help: string; run: (args: string[]) => void }> = {
 		help: {
-			help: 'muestra esta ayuda',
+			help: s.help,
 			run: () =>
 				Object.entries(commands).forEach(([name, c]) =>
 					print(`<span class="acc">${name.padEnd(9)}</span> <span class="dim">${c.help}</span>`),
 				),
 		},
 		ls: {
-			help: 'ls [pilar] — lista artículos',
+			help: s.ls,
 			run: ([pillar]) => {
-				if (pillar && !data.pillars[pillar]) return print(`ls: pilar desconocido "${esc(pillar)}". Prueba <span class="acc">pilares</span>`, 'err');
+				if (pillar && !data.pillars[pillar]) return print(fmt(s.lsUnknown, esc(pillar)), 'err');
 				list(pillar ? data.posts.filter((p) => p.pillar === pillar) : data.posts);
 			},
 		},
-		pilares: {
-			help: 'muestra los pilares de contenido',
+		[data.pillarsCmd]: {
+			help: s.pillars,
 			run: () =>
 				Object.entries(data.pillars).forEach(([k, label]) => {
 					const n = data.posts.filter((p) => p.pillar === k).length;
-					print(`<a href="/pilares/${k}">${k}</a> <span class="dim">— ${esc(label)} (${n})</span>`);
+					print(`<a href="${base}pilares/${k}">${k}</a> <span class="dim">— ${esc(label)} (${n})</span>`);
 				}),
 		},
 		grep: {
-			help: 'grep <texto> — busca en títulos, tags y descripciones',
+			help: esc(s.grep),
 			run: (args) => {
 				const q = args.join(' ').toLowerCase();
-				if (!q) return print('uso: grep <texto>', 'err');
+				if (!q) return print(esc(s.grepUsage), 'err');
 				list(
 					data.posts.filter((p) =>
 						[p.title, p.description, ...p.tags].join(' ').toLowerCase().includes(q),
@@ -106,26 +163,26 @@ const index = {
 			},
 		},
 		open: {
-			help: 'open <n|slug> — abre un artículo',
+			help: esc(s.open),
 			run: ([arg]) => {
 				const n = Number(arg);
 				const post = Number.isInteger(n) && n > 0 ? data.posts[n - 1] : data.posts.find((p) => p.slug === arg);
-				if (!post) return print(`open: no encontrado "${esc(arg ?? '')}"`, 'err');
-				print(`abriendo ${esc(post.slug)}…`, 'dim');
-				location.href = `/blog/${post.slug}/`;
+				if (!post) return print(fmt(s.openNotFound, esc(arg ?? '')), 'err');
+				print(fmt(s.opening, esc(post.slug)), 'dim');
+				location.href = post.url;
 			},
 		},
 		whoami: {
-			help: 'quién escribe este blog',
+			help: s.whoami,
 			run: () => {
 				print(`<span class="acc">${esc(data.author.name)}</span> — ${esc(data.author.location)}`);
 				print(esc(data.author.role), 'dim');
-				print(`<a href="${esc(data.author.github)}" target="_blank" rel="noopener">${esc(data.author.github)}</a> · <a href="/about">/about</a>`);
+				print(`<a href="${esc(data.author.github)}" target="_blank" rel="noopener">${esc(data.author.github)}</a> · <a href="${base}about">/about</a>`);
 			},
 		},
-		clear: { help: 'limpia la pantalla', run: () => (out.innerHTML = '') },
+		clear: { help: s.clear, run: () => (out.innerHTML = '') },
 	};
-	const aliases: Record<string, string> = { cat: 'open', cd: 'ls', find: 'grep', '?': 'help' };
+	const aliases: Record<string, string> = { cat: 'open', cd: 'ls', find: 'grep', '?': 'help', pilares: data.pillarsCmd, pillars: data.pillarsCmd };
 
 	function exec(raw: string) {
 		const line = raw.trim();
@@ -135,7 +192,7 @@ const index = {
 		hIdx = history.length;
 		const [name, ...args] = line.split(/\s+/);
 		const cmd = commands[aliases[name] ?? name];
-		cmd ? cmd.run(args) : print(`${esc(name)}: comando no encontrado. Escribe <span class="acc">help</span>`, 'err');
+		cmd ? cmd.run(args) : print(fmt(s.notFound, esc(name)), 'err');
 	}
 
 	form.addEventListener('submit', (e) => {
@@ -165,7 +222,7 @@ const index = {
 		if (!(e.target as HTMLElement).closest('a')) input.focus({ preventScroll: true });
 	});
 
-	print('Bienvenido. Escribe <span class="acc">help</span> para ver comandos, o prueba <span class="acc">ls</span>.', 'dim');
+	print(s.welcome, 'dim');
 </script>
 
 <style>

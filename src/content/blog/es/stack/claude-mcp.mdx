@@ -1,0 +1,104 @@
+---
+title: 'MCP: escribí un servidor para que Claude use mi propia librería'
+description: 'Qué es el Model Context Protocol, cómo conectar servidores existentes y cómo crear uno propio en TypeScript en menos de 100 líneas.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: backend
+tags: ['serie-mi-stack', 'claude', 'mcp', 'typescript', 'ia']
+draft: true
+summary:
+  stack: ['MCP', 'TypeScript', 'Claude Code']
+  complexity: media
+  role: 'Autor'
+  impact: 'TODO: ej. Claude calcula zonas de entrenamiento con run-science en vez de inventarlas'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · MCP
+(Verificar API vigente del SDK de TypeScript de MCP y comandos
+`claude mcp add` / formato de .mcp.json antes de publicar.)
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Mi librería como herramienta de Claude"
+   Servidor MCP propio que expone run-science (calcular VDOT, zonas
+   Karvonen) como tools. Mostrar la diferencia entre que el modelo
+   "calcule de memoria" vs. que llame a la función verificada.
+   🎬 Video (8–10 min): gancho — preguntar a Claude sin MCP (respuesta
+   aproximada) vs. con MCP (número exacto, igual al de las tablas).
+   Luego construir el servidor en vivo.
+
+B) DEMOSTRAR HABILIDAD — "Base de datos para el agente, sin riesgos"
+   Conectar un MCP de PostgreSQL con un rol de solo lectura, esquema
+   restringido y sin datos sensibles; explicar el modelo de amenazas
+   (prompt injection desde datos, escritura accidental).
+   🎬 Video (8 min): intentar un DELETE a través del agente → falla
+   por permisos del rol. "La seguridad está en la base, no en el
+   prompt."
+
+C) ÚTIL PARA EL USUARIO — "Los MCP que uso y cómo configurarlos"
+   Lista curada (docs, GitHub, navegador, base de datos…), cómo
+   agregarlos y compartirlos con el equipo vía .mcp.json en el repo.
+   🎬 Video (6 min) + short por cada MCP.
+
+Recomendada: A (original, conecta con run-science y enseña el protocolo).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Qué es MCP (en una frase)
+
+TODO: un protocolo estándar para que un agente de IA use herramientas y datos externos, igual
+para cualquier cliente que lo soporte.
+
+{/* 🎬 Escena: comparación sin MCP vs. con MCP. */}
+
+## 2. Conectar un servidor existente
+
+```bash
+# TODO: verificar sintaxis vigente
+claude mcp add mi-servidor -- npx -y paquete-del-servidor
+```
+
+TODO: diferencia entre alcance local, de proyecto (`.mcp.json`) y de usuario.
+
+## 3. Mi propio servidor en TypeScript
+
+```ts
+// TODO: validar contra la versión actual de @modelcontextprotocol/sdk
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { z } from 'zod';
+import { karvonen } from 'run-science'; // TODO: import real
+
+const server = new McpServer({ name: 'run-science', version: '0.1.0' });
+
+server.tool(
+	'zona_karvonen',
+	'Calcula la FC objetivo para una intensidad dada',
+	{ restHr: z.number(), maxHr: z.number(), intensity: z.number().min(0).max(1) },
+	async ({ restHr, maxHr, intensity }) => ({
+		content: [{ type: 'text', text: String(Math.round(karvonen(restHr, maxHr, intensity))) }],
+	}),
+);
+
+await server.connect(new StdioServerTransport());
+```
+
+{/* 🎬 Escena: registrar el servidor y ver a Claude llamar la tool en vivo. */}
+
+## 4. Probarlo
+
+TODO: MCP Inspector + una conversación real.
+
+## 5. Seguridad
+
+TODO: validar entradas, no exponer secretos, solo lectura por defecto.
+
+## 6. Errores que cometí
+
+- TODO: escribir en stdout desde un servidor stdio (rompe el protocolo) / descripciones de tools vagas.
+
+## 7. Repositorio
+
+TODO

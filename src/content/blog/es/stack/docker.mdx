@@ -1,0 +1,112 @@
+---
+title: 'Docker: de una imagen de 1 GB a una de 80 MB (y entender por qué)'
+description: 'Docker explicado con un caso medible: multi-stage builds, caché de capas y .dockerignore aplicados a una app real.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: backend
+tags: ['serie-mi-stack', 'docker', 'devops', 'contenedores']
+draft: true
+summary:
+  stack: ['Docker', 'Docker Compose', 'Python']
+  complexity: media
+  role: 'Autor'
+  impact: 'TODO: ej. imagen 1.1 GB → 80 MB · build con caché 90 s → 6 s'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Docker
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Dockerizar algo real, no un hola mundo"
+   Stack multi-servicio: Django + PostgreSQL + Redis + worker (Celery),
+   con healthchecks, depends_on con condition: service_healthy y
+   volúmenes nombrados. Mostrar qué se rompe sin healthchecks.
+   🎬 Video (8–10 min): gancho "funciona en mi máquina" → clonar repo
+   en otra máquina → `docker compose up` → todo arriba. Diagrama de
+   servicios animado mientras arrancan.
+
+B) DEMOSTRAR HABILIDAD — "1 GB → 80 MB, medido"
+   Optimizar paso a paso una imagen: base slim, multi-stage, orden de
+   capas para caché, .dockerignore, usuario no root. Tabla de métricas
+   en cada paso (tamaño, tiempo de build, vulnerabilidades con
+   `docker scout`).
+   🎬 Video (6–8 min): gráfico de barras que baja con cada iteración.
+   Gancho: "esta imagen pesa más que Windows XP". Usar `dive` para
+   mostrar capas visualmente.
+
+C) ÚTIL PARA EL USUARIO — "Entorno de desarrollo para todo el equipo"
+   Plantilla compose.yaml con `develop.watch` (hot reload), perfiles
+   (dev/test), .env.example; repo plantilla para clonar.
+   🎬 Video (4–5 min): "nuevo en el equipo, primer día, 1 comando".
+
+Recomendada: B (encaja con el enfoque del blog en impacto medible).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Docker (en una frase)
+
+TODO: Docker convierte "en mi máquina funciona" en "funciona en cualquier máquina", pero una
+imagen mal hecha es lenta de construir, pesada de desplegar e insegura.
+
+{/* 🎬 Escena: `docker images` mostrando la imagen inicial de 1 GB. */}
+
+## 2. El punto de partida (lo que casi todos escriben)
+
+```dockerfile
+FROM python:3.13
+COPY . /app
+WORKDIR /app
+RUN pip install -r requirements.txt
+CMD ["python", "app.py"]
+```
+
+TODO: medir tamaño y tiempo de build.
+
+## 3. Optimización paso a paso
+
+### 3.1 `.dockerignore`
+
+### 3.2 Imagen base slim
+
+### 3.3 Orden de capas para aprovechar la caché
+
+### 3.4 Multi-stage build
+
+```dockerfile
+FROM python:3.13-slim AS build
+WORKDIR /app
+COPY requirements.txt .
+RUN pip wheel --wheel-dir /wheels -r requirements.txt
+
+FROM python:3.13-slim
+RUN useradd --create-home app
+WORKDIR /app
+COPY --from=build /wheels /wheels
+RUN pip install --no-cache-dir /wheels/* && rm -rf /wheels
+COPY . .
+USER app
+CMD ["python", "app.py"]
+```
+
+### 3.5 Usuario no root
+
+{/* 🎬 Escena: gráfico de barras actualizándose después de cada subsección. */}
+
+## 4. Resultados
+
+| Paso | Tamaño | Build (sin caché) | Build (con caché) |
+| ---- | ------ | ----------------- | ----------------- |
+| Inicial | TODO | TODO | TODO |
+| .dockerignore | TODO | TODO | TODO |
+| slim | TODO | TODO | TODO |
+| multi-stage | TODO | TODO | TODO |
+
+## 5. Errores que cometí
+
+- TODO: copiar `.env` dentro de la imagen / `latest` en producción / correr como root.
+
+## 6. Repositorio
+
+TODO: un commit por paso para que el lector pueda hacer `git checkout` de cada etapa.

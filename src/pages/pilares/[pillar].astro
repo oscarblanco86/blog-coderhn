@@ -1,29 +1,10 @@
 ---
-import PostCard from '../../components/PostCard.astro';
-import { PILLAR_KEYS, PILLARS, type PillarKey } from '../../consts';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getPosts } from '../../lib/posts';
+import { PILLAR_KEYS, type PillarKey } from '../../consts';
+import PillarView from '../../views/PillarView.astro';
 
 export function getStaticPaths() {
 	return PILLAR_KEYS.map((pillar) => ({ params: { pillar } }));
 }
-
-const pillar = Astro.params.pillar as PillarKey;
-const p = PILLARS[pillar];
-const posts = (await getPosts()).filter((x) => x.data.pillar === pillar);
 ---
 
-<BaseLayout title={p.label} description={p.description}>
-	<p class="mono crumbs"><a href="/pilares">pilares</a> / {pillar}</p>
-	<h1>{p.icon} {p.label}</h1>
-	<p class="muted">{p.description}</p>
-	{posts.length === 0 && <p class="mono muted">// próximamente</p>}
-	{posts.map((post) => <PostCard post={post} />)}
-</BaseLayout>
-
-<style>
-	.crumbs {
-		font-size: 0.8em;
-		color: var(--text-muted);
-	}
-</style>
+<PillarView lang="es" pillar={Astro.params.pillar as PillarKey} />

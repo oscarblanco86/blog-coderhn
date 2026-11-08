@@ -1,0 +1,108 @@
+---
+title: 'ISO 9000 en el desarrollo de software: calidad sin burocracia'
+description: 'Cómo traducir los principios y cláusulas de ISO 9001 a prácticas que un equipo de software ya conoce: PRs, CI, ADRs y postmortems.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: calidad
+tags: ['iso-9000', 'iso-9001', 'calidad', 'procesos', 'devops']
+draft: true
+summary:
+  stack: ['ISO 9001:2015', 'ISO/IEC 90003', 'GitHub', 'CI/CD']
+  complexity: media
+  role: 'Autor'
+  impact: 'TODO: ej. cada cláusula relevante de ISO 9001 mapeada a una práctica con evidencia automática en el repo'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Pilar "Calidad de Software (ISO 9000)"
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Este blog, auditado con ISO 9001"
+   Usar el propio repo como caso: qué cláusula cubre cada pieza
+   (draft: true + CI = control de salidas no conformes, ADRs =
+   información documentada, PRs = revisión del diseño).
+   🎬 Video (8 min): recorrer el repo como si fuera un auditor.
+
+B) DEMOSTRAR HABILIDAD — "Matriz cláusula → práctica → evidencia"
+   Tabla completa de las cláusulas 4–10 con la evidencia que se
+   genera sola (historial de git, checks de CI, issues etiquetados).
+   Mostrar que la evidencia no se escribe a mano: sale del flujo.
+
+C) ÚTIL PARA EL USUARIO — "Kit mínimo para empezar mañana"
+   Plantillas: PR template con checklist, ADR, postmortem sin culpas
+   y un tablero de métricas (DORA) como "evaluación del desempeño".
+
+Elegir una y borrar las otras dos. Verificar con el texto oficial de
+la norma antes de publicar (numeración de cláusulas y si ya hay una
+revisión nueva de ISO 9001).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. El problema
+
+TODO: Una historia real. Ej.: el mismo bug volvió a producción tres veces porque nadie dejó
+por escrito la causa raíz; o una auditoría de un cliente pidió "evidencia de control de
+cambios" y no había dónde buscarla.
+
+La idea central del post: **ISO 9000 no es papeleo, es pedir que lo que ya haces bien sea
+repetible y demostrable.**
+
+## 2. ISO 9000, 9001 y 90003: qué es cada una
+
+- **ISO 9000**: fundamentos y vocabulario de la gestión de la calidad. Define los 7 principios.
+- **ISO 9001**: los requisitos de un sistema de gestión de la calidad. Es la que se certifica.
+- **ISO/IEC 90003**: guía para aplicar ISO 9001 al software. TODO: confirmar versión vigente.
+
+## 3. Los 7 principios, traducidos a un equipo de desarrollo
+
+| Principio | En un equipo de software |
+| --- | --- |
+| Enfoque al cliente | Criterios de aceptación escritos con el usuario; métricas de uso reales |
+| Liderazgo | Definición de "hecho" compartida y defendida por el equipo |
+| Compromiso de las personas | Revisiones de código como aprendizaje, no como control |
+| Enfoque a procesos | Un flujo único: issue → rama → PR → CI → deploy |
+| Mejora | Retrospectivas con acciones que se cierran |
+| Decisiones basadas en evidencia | Métricas DORA, cobertura, errores en producción |
+| Gestión de las relaciones | Acuerdos claros con proveedores y dependencias (SLA, versiones fijadas) |
+
+## 4. Cláusulas de ISO 9001 → prácticas → evidencia
+
+| Cláusula | Qué pide | Práctica | Evidencia que se genera sola |
+| --- | --- | --- | --- |
+| 6.1 Riesgos y oportunidades | Pensar en lo que puede fallar | Revisión de riesgos en el diseño | Sección "riesgos" en el ADR |
+| 7.5 Información documentada | Documentos controlados y versionados | ADRs y README en el repo | Historial de git |
+| 8.3 Diseño y desarrollo | Planificar, revisar, verificar y validar | PRs con revisión obligatoria y tests | PRs aprobados + checks de CI |
+| 8.5.6 Control de cambios | Cambios revisados y trazables | Ramas protegidas, commits enlazados a issues | Log de merges |
+| 8.7 Salidas no conformes | Que lo defectuoso no llegue al cliente | Feature flags, `draft: true`, rollback | Deploys bloqueados por CI |
+| 9.1 Seguimiento y medición | Medir el desempeño | Métricas DORA | Tablero |
+| 9.2 Auditoría interna | Revisar que el sistema funciona | TODO: auditoría trimestral ligera | Informe en el repo |
+| 10.2 No conformidad y acción correctiva | Causa raíz y corrección | Postmortems sin culpas | Issue etiquetado + test de regresión |
+
+TODO: verificar la numeración con el texto oficial de ISO 9001:2015.
+
+## 5. Código clave: la evidencia como código
+
+```markdown
+<!-- .github/pull_request_template.md -->
+## Qué cambia y por qué
+<!-- enlace al issue (trazabilidad, 8.5.6) -->
+
+## Verificación (8.3)
+- [ ] Tests nuevos o actualizados
+- [ ] Probado en el deploy preview
+
+## Riesgos (6.1)
+<!-- qué puede romperse y cómo se revierte -->
+```
+
+TODO: añadir la plantilla de postmortem y una plantilla de ADR.
+
+## 6. Resultados y lecciones aprendidas
+
+| Métrica | Antes | Después |
+| ------- | ----- | ------- |
+| TODO: bugs repetidos por trimestre | … | … |
+| TODO: tiempo para reunir evidencia de una auditoría | … | … |
+
+TODO: qué no funcionó (ej. documentar de más) y qué harías distinto.

@@ -1,0 +1,67 @@
+---
+title: 'Tailwind CSS v4: a design system with tokens, dark mode and under 10 KB of CSS'
+description: 'Beyond "utility classes": tokens with @theme, dark-mode variants and a real measurement of the CSS that reaches the user.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: frontend
+tags: ['my-stack-series', 'tailwindcss', 'css', 'design-system']
+draft: true
+summary:
+  stack: ['Tailwind CSS v4', 'Vite', 'TODO']
+  complexity: media
+  role: 'Author'
+  impact: 'TODO: e.g. final CSS 8 KB gzip · 1 token file for light/dark'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Tailwind CSS — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/tailwindcss.mdx. */}
+
+## 1. Why Tailwind (in one sentence)
+
+TODO: styles live next to the markup and the design system becomes a useful constraint, not a
+guide nobody reads.
+
+## 2. Installation (v4)
+
+```bash
+bun add tailwindcss @tailwindcss/vite
+```
+
+```css
+/* src/styles.css */
+@import 'tailwindcss';
+```
+
+## 3. Tokens with @theme
+
+```css
+@theme {
+	--color-brand: oklch(0.65 0.18 145);
+	--color-surface: oklch(0.98 0 0);
+	--font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+```
+
+TODO: how they become utilities (`bg-brand`, `font-mono`).
+
+## 4. Dark mode with data-theme
+
+```css
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+```
+
+TODO: wire it to a light/dark/auto button (like the one on this blog).
+
+## 5. How much CSS reaches the user?
+
+| Scenario | CSS (gzip) |
+| -------- | ---------- |
+| TODO | TODO |
+
+## 6. Mistakes I made
+
+- TODO: building class names dynamically (`bg-${color}`) / overusing @apply.
+
+## 7. Repository
+
+TODO

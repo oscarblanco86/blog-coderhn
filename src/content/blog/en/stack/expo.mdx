@@ -1,0 +1,68 @@
+---
+title: "Expo: an app that uses your phone's sensors to measure running cadence"
+description: 'React Native with Expo using the accelerometer: from idea to an app installed on your phone, without touching Xcode or Android Studio.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: frontend
+tags: ['my-stack-series', 'expo', 'react-native', 'mobile']
+draft: true
+summary:
+  stack: ['Expo', 'React Native', 'TypeScript', 'expo-sensors']
+  complexity: media
+  role: 'Author'
+  impact: 'TODO: e.g. cadence error < 3 spm vs. GPS watch'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Expo — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/expo.mdx. */}
+
+## 1. Why Expo (in one sentence)
+
+TODO: it lets me use what I already know from React to get a native app on my phone in minutes,
+with sensor access and no native code.
+
+## 2. Creating the project
+
+```bash
+npx create-expo-app@latest cadence
+cd cadence
+npx expo install expo-sensors expo-haptics
+npx expo start   # scan the QR with Expo Go
+```
+
+## 3. Reading the accelerometer
+
+```tsx
+import { Accelerometer } from 'expo-sensors';
+import { useEffect, useState } from 'react';
+
+export function useAcceleration(intervalMs = 20) {
+	const [sample, setSample] = useState({ x: 0, y: 0, z: 0 });
+	useEffect(() => {
+		Accelerometer.setUpdateInterval(intervalMs);
+		const sub = Accelerometer.addListener(setSample);
+		return () => sub.remove();
+	}, [intervalMs]);
+	return sample;
+}
+```
+
+## 4. From signal to steps
+
+TODO: vector magnitude, low-pass filter, peak detection with a threshold and a minimum time
+between steps. Include a chart of the signal.
+
+## 5. Validation
+
+| Pace | Watch (spm) | App (spm) | Error |
+| ---- | ----------- | --------- | ----- |
+| Easy | TODO | TODO | TODO |
+| Tempo | TODO | TODO | TODO |
+
+## 6. Mistakes I made
+
+- TODO: sampling rate too low / sensors paused when the screen locks.
+
+## 7. Repository
+
+TODO

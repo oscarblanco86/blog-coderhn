@@ -1,0 +1,92 @@
+---
+title: 'Building run-science: a modular package to compute VDOT and Karvonen zones'
+description: 'How I designed a zero-dependency library for running training metrics, with verifiable formulas and tests against reference tables.'
+pubDate: '2026-11-04'
+pillar: opensource
+tags: ['open-source', 'typescript', 'testing', 'sports-science']
+draft: true
+summary:
+  stack: ['TypeScript'] # TODO: confirm real stack
+  complexity: media
+  coverage: 'TODO' # e.g. '100% on formulas module (Vitest)'
+  role: 'Author and maintainer'
+  impact: 'TODO: measurable result (package size, accuracy vs. Daniels tables, adoption…)'
+repo: 'https://github.com/oscarblanco86/run-science' # TODO: verify URL
+---
+
+{/* DRAFT — English translation of es/run-science-metricas-fisiologicas.mdx. Keep both in sync. */}
+
+## 1. The problem
+
+Running apps compute paces and heart-rate zones, but they do it as a black box: you can't audit
+the formula or reuse it in your own project (say, a running club platform or a Strava data
+analysis).
+
+TODO: what made you write it? Which project did you need it for?
+
+## 2. The constraints
+
+- **Zero runtime dependencies:** the package must work in the browser, Node, Deno or Bun.
+- **Verifiable formulas:** every calculation must be checkable against its original source
+  (Jack Daniels' VDOT tables, the Karvonen formula).
+- **Small, composable API:** pure, stateless functions.
+- TODO: other real constraints.
+
+## 3. The proposed solution (architecture)
+
+```text
+run-science/
+├── vdot/        → VDOT from a race result (distance + time) and training paces
+├── hr/          → heart-rate reserve and Karvonen zones
+└── units/       → pace / speed / distance conversion
+```
+
+**Key decision:** pure functions that take and return SI units, with unit conversion isolated in
+its own module. That keeps the physiology logic separate from presentation formatting.
+
+TODO: adjust the module tree to the real repo.
+
+## 4. Key code
+
+The Karvonen formula computes a zone's target heart rate from the heart-rate reserve:
+
+```ts
+/**
+ * Target HR = resting HR + intensity × (max HR − resting HR)
+ * @param intensity fraction between 0 and 1 (e.g. 0.7 = 70 %)
+ */
+export function karvonen(restHr: number, maxHr: number, intensity: number): number {
+	if (maxHr <= restHr) throw new RangeError('maxHr must be greater than restHr');
+	if (intensity < 0 || intensity > 1) throw new RangeError('intensity must be between 0 and 1');
+	return Math.round(restHr + intensity * (maxHr - restHr));
+}
+```
+
+And its test:
+
+```ts
+import { expect, test } from 'vitest';
+import { karvonen } from './hr';
+
+test('zone 2 (60–70 %) for resting HR 50 and max HR 190', () => {
+	expect(karvonen(50, 190, 0.6)).toBe(134);
+	expect(karvonen(50, 190, 0.7)).toBe(148);
+});
+```
+
+TODO: replace with the real VDOT code (the most interesting part of the package).
+
+## 5. Results and lessons learned
+
+| Metric                        | Value |
+| ----------------------------- | ----- |
+| Published size (min + gzip)   | TODO  |
+| Runtime dependencies          | 0     |
+| Test coverage                 | TODO  |
+| Deviation vs. Daniels tables  | TODO  |
+
+TODO: what you learned (rounding, input validation, documenting sources…).
+
+## 6. Repository
+
+TODO: link to the repo and, if available, the npm/JSR package.

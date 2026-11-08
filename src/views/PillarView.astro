@@ -1,0 +1,30 @@
+---
+import PostCard from '../components/PostCard.astro';
+import { PILLARS, type PillarKey } from '../consts';
+import { localizePath, useTranslations, type Lang } from '../i18n/ui';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPosts } from '../lib/posts';
+
+interface Props {
+	lang: Lang;
+	pillar: PillarKey;
+}
+const { lang, pillar } = Astro.props;
+const t = useTranslations(lang);
+const p = PILLARS[pillar];
+const posts = (await getPosts(lang)).filter((x) => x.data.pillar === pillar);
+---
+
+<BaseLayout title={p.label[lang]} description={p.description[lang]}>
+	<p class="mono crumbs"><a href={localizePath('/pilares', lang)}>{t('nav.pillars')}</a> / {pillar}</p>
+	<h1>{p.icon} {p.label[lang]}</h1>
+	<p class="muted">{p.description[lang]}</p>
+	{posts.length === 0 && <p class="mono muted">{t('pillars.soon')}</p>}
+	{posts.map((post) => <PostCard post={post} />)}
+</BaseLayout>
+<style>
+	.crumbs {
+		font-size: 0.8em;
+		color: var(--text-muted);
+	}
+</style>

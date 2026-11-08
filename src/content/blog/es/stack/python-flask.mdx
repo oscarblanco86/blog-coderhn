@@ -1,0 +1,107 @@
+---
+title: 'Flask: convertir un script de Python en una API en 20 líneas'
+description: 'Cuándo elijo Flask en lugar de Django, y cómo exponer cualquier script o librería de Python como un servicio web.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: backend
+tags: ['serie-mi-stack', 'python', 'flask', 'api']
+draft: true
+summary:
+  stack: ['Python', 'Flask', 'pytest']
+  complexity: baja
+  coverage: 'TODO (pytest)'
+  role: 'Autor'
+  impact: 'TODO: ej. calculadora VDOT disponible como API pública'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Python + Flask
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Un microservicio que hace UNA cosa"
+   Receptor de webhooks: GitHub (push / PR) → validar firma HMAC →
+   notificación a Telegram o Discord. Desplegado y funcionando.
+   🎬 Video (6–8 min): gancho "mi teléfono vibra cada vez que alguien
+   abre un PR". Hacer push en vivo y mostrar la notificación llegando.
+
+B) DEMOSTRAR HABILIDAD — "Flask que escala: factory + blueprints"
+   Application factory, blueprints, config por entorno, tests con el
+   test client, y una sección de decisión: Flask vs Django vs FastAPI
+   con criterios concretos (tamaño del equipo, async, admin, ORM).
+   🎬 Video (8 min): tabla de decisión en pizarra + refactor de un
+   app.py de 600 líneas a blueprints.
+
+C) ÚTIL PARA EL USUARIO — "De script/notebook a API en 20 líneas"
+   Exponer la librería run-science (VDOT, zonas Karvonen) como API;
+   aplica a cualquier script de análisis de datos.
+   🎬 Video (4–5 min, también versión short): notebook a la izquierda,
+   curl a la derecha devolviendo el mismo resultado.
+
+Recomendada: C (rápido de producir, conecta con run-science, muy útil).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Flask (en una frase)
+
+TODO: cuando el problema es pequeño y bien definido, Flask me deja escribir solo lo necesario.
+
+{/* 🎬 Escena: notebook con la función funcionando, "¿y si otros la pudieran usar?". */}
+
+## 2. ¿Flask o Django?
+
+| Criterio | Flask | Django |
+| -------- | ----- | ------ |
+| Servicio pequeño, una responsabilidad | ✅ | — |
+| Admin, auth y ORM incluidos | — | ✅ |
+| TODO | | |
+
+## 3. El script original
+
+```python
+# vdot.py — TODO: reemplazar por la función real de run-science
+def vdot(distance_m: float, time_s: float) -> float:
+    ...
+```
+
+## 4. La API en 20 líneas
+
+```python
+# app.py
+from flask import Flask, jsonify, request
+from vdot import vdot
+
+app = Flask(__name__)
+
+@app.get("/vdot")
+def calc_vdot():
+    try:
+        distance = float(request.args["distance_m"])
+        time = float(request.args["time_s"])
+    except (KeyError, ValueError):
+        return jsonify(error="distance_m y time_s son obligatorios y numéricos"), 400
+    return jsonify(vdot=round(vdot(distance, time), 1))
+```
+
+```bash
+flask --app app run --debug
+curl "http://127.0.0.1:5000/vdot?distance_m=10000&time_s=2700"
+```
+
+{/* 🎬 Escena: curl a la derecha, notebook a la izquierda, mismo número. */}
+
+## 5. Test
+
+```python
+def test_vdot_requiere_parametros(client):
+    assert client.get("/vdot").status_code == 400
+```
+
+## 6. Errores que cometí
+
+- TODO: usar el servidor de desarrollo en producción (usar gunicorn) / no validar entradas.
+
+## 7. Repositorio
+
+TODO

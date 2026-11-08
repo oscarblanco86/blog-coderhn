@@ -1,0 +1,71 @@
+---
+title: 'Claude Skills: my fullstack, backend and frontend skills (and how to write your own)'
+description: 'What a skill is, how Claude loads it, and the three I use daily so the agent follows my standards without me repeating them.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: calidad
+tags: ['my-stack-series', 'claude', 'skills', 'ai']
+draft: true
+summary:
+  stack: ['Claude Code', 'Agent Skills', 'Markdown']
+  complexity: media
+  role: 'Author'
+  impact: 'TODO: e.g. same conventions across N projects without rewriting instructions'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Claude Skills — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/claude-skills.mdx. */}
+
+## 1. What a skill is (in one sentence)
+
+TODO: a package of instructions (and optionally scripts) the agent loads only when the task needs
+it, instead of filling the context with everything up front.
+
+## 2. Anatomy of a skill
+
+```text
+.claude/skills/
+└── backend/
+    ├── SKILL.md        → instructions + frontmatter (name, description)
+    └── scripts/        → optional
+```
+
+```markdown
+---
+name: backend
+description: TODO — when it should be used (this line decides whether it triggers)
+---
+
+# Backend standards
+- TODO
+```
+
+## 3. My three skills
+
+### 3.1 backend
+
+TODO: which rules it includes (structure, tests, security, migrations).
+
+### 3.2 frontend
+
+TODO: accessibility, performance, components, tests.
+
+### 3.3 fullstack
+
+TODO: how it coordinates the other two (API contracts, shared types).
+
+## 4. The experiment: same request, four results
+
+| | No skill | backend | frontend | fullstack |
+| --- | --- | --- | --- | --- |
+| Tests included | TODO | TODO | TODO | TODO |
+| Follows conventions | TODO | TODO | TODO | TODO |
+| Files touched | TODO | TODO | TODO | TODO |
+
+## 5. Mistakes I made
+
+- TODO: vague descriptions that never trigger the skill / giant skills that should be two.
+
+## 6. Repository
+
+TODO

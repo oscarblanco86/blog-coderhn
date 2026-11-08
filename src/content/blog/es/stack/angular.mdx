@@ -1,0 +1,102 @@
+---
+title: 'Angular moderno: signals, standalone y control flow (no es el Angular que recuerdas)'
+description: 'Refactorizo un componente estilo Angular clásico a Angular moderno y mido qué cambia en código, rendimiento y legibilidad.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: frontend
+tags: ['serie-mi-stack', 'angular', 'signals', 'typescript']
+draft: true
+summary:
+  stack: ['Angular', 'TypeScript', 'Signals']
+  complexity: media
+  role: 'Autor'
+  impact: 'TODO: ej. −40 % líneas · sin Zone.js · bundle −TODO KB'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Angular
+(Verificar el estado actual de zoneless, signal forms y resource()
+en la versión de Angular vigente al publicar.)
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Antes y después: refactor a Angular moderno"
+   Un componente con NgModule, @Input/@Output, *ngIf/*ngFor y
+   suscripciones RxJS manuales → standalone, input()/output(),
+   signal/computed/effect, @if/@for, zoneless. Diff lado a lado.
+   🎬 Video (8–10 min): gancho "si dejaste Angular en 2018, mira esto".
+   Diff animado sección por sección; medir bundle al final.
+
+B) DEMOSTRAR HABILIDAD — "Formularios empresariales, donde Angular brilla"
+   Formulario complejo: reactive forms tipados, validadores async
+   (¿existe el RTN/correo?), campos dinámicos, componentes
+   ControlValueAccessor reutilizables.
+   🎬 Video (10 min): formulario real de alta de cliente/empleado;
+   mostrar validaciones en vivo y el código detrás.
+
+C) ÚTIL PARA EL USUARIO — "Sé React, ¿cómo aprendo Angular?"
+   El mismo widget en React y Angular lado a lado: estado, props,
+   efectos, servicios vs. hooks, DI.
+   🎬 Video (6–8 min): pantalla dividida React | Angular, mismo
+   resultado en el navegador al centro.
+
+Recomendada: A (desmonta prejuicios y muestra que sigo al día).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Angular (en una frase)
+
+TODO: para aplicaciones empresariales grandes, tener opiniones fuertes (DI, router, forms, CLI)
+reduce las decisiones que un equipo tiene que discutir.
+
+{/* 🎬 Escena: componente "viejo" en pantalla completa, contar líneas. */}
+
+## 2. El componente "clásico"
+
+```ts
+// TODO: componente con NgModule, @Input, *ngFor y subscribe manual
+```
+
+## 3. El mismo componente, moderno
+
+```ts
+import { Component, computed, input, signal } from '@angular/core';
+
+@Component({
+	selector: 'app-athletes',
+	template: `
+		<input (input)="query.set($any($event.target).value)" placeholder="Buscar" />
+		@for (a of filtered(); track a.id) {
+			<p>{{ a.name }}</p>
+		} @empty {
+			<p>Sin resultados</p>
+		}
+	`,
+})
+export class AthletesComponent {
+	athletes = input.required<{ id: number; name: string }[]>();
+	query = signal('');
+	filtered = computed(() =>
+		this.athletes().filter((a) => a.name.toLowerCase().includes(this.query().toLowerCase())),
+	);
+}
+```
+
+{/* 🎬 Escena: diff animado línea por línea. */}
+
+## 4. ¿Qué ganamos?
+
+| Métrica | Clásico | Moderno |
+| ------- | ------- | ------- |
+| Líneas | TODO | TODO |
+| Bundle | TODO | TODO |
+| Detección de cambios | Zone.js | Signals (TODO: zoneless) |
+
+## 5. Errores que cometí
+
+- TODO: mezclar signals y observables sin `toSignal` / efectos que escriben otros signals.
+
+## 6. Repositorio
+
+TODO

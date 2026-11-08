@@ -1,0 +1,68 @@
+---
+/**
+ * Selector de idioma "ES · EN". Al elegir uno se guarda en localStorage("lang") y desde ese
+ * momento deja de aplicarse la detección automática por idioma del navegador (ver BaseHead).
+ */
+import { LANGS, LANG_META, useTranslations, type Lang } from '../i18n/ui';
+
+interface Props {
+	lang: Lang;
+	/** URL de esta misma página en el otro idioma (o el índice del blog si no hay traducción). */
+	altHref: string;
+}
+const { lang, altHref } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<div class="lang mono" role="group" aria-label={t('nav.lang')}>
+	{
+		LANGS.map((l) =>
+			l === lang ? (
+				<span class="current" aria-current="true" title={LANG_META[l].label}>
+					{l}
+				</span>
+			) : (
+				<a href={altHref} hreflang={l} lang={l} data-set-lang={l} title={t('nav.switchTo')}>
+					{l}
+				</a>
+			),
+		)
+	}
+</div>
+
+<script>
+	document.querySelectorAll<HTMLAnchorElement>('[data-set-lang]').forEach((a) =>
+		a.addEventListener('click', () => {
+			try {
+				localStorage.setItem('lang', a.dataset.setLang!);
+			} catch {}
+		}),
+	);
+</script>
+
+<style>
+	.lang {
+		display: flex;
+		align-items: center;
+		font-size: 0.72em;
+		text-transform: uppercase;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		overflow: hidden;
+	}
+	.lang > * {
+		padding: 0.15em 0.5em;
+		text-decoration: none;
+	}
+	.current {
+		color: var(--bg);
+		background: var(--accent);
+	}
+	a {
+		color: var(--text-muted);
+	}
+	a:hover {
+		color: var(--accent);
+		background: var(--bg-soft);
+	}
+</style>

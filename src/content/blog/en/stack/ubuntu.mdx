@@ -1,0 +1,65 @@
+---
+title: 'Ubuntu as a development workstation: from clean install to productive in 15 minutes'
+description: 'My Ubuntu post-install script: tools, Node and Python versions, Docker and terminal, reproducible on any machine.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: backend
+tags: ['my-stack-series', 'ubuntu', 'linux', 'dotfiles', 'productivity']
+draft: true
+summary:
+  stack: ['Ubuntu', 'Bash', 'apt', 'TODO']
+  complexity: baja
+  role: 'Author'
+  impact: 'TODO: e.g. new laptop ready to work in 15 min with a single command'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Ubuntu — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/ubuntu.mdx. */}
+
+## 1. Why Ubuntu (in one sentence)
+
+TODO: the same system my servers run, with long-term support and documentation for any problem.
+
+## 2. What the script installs
+
+| Category | Tool | Why this one |
+| -------- | ---- | ------------ |
+| Containers | Docker Engine (official repo) | TODO |
+| Node.js | fnm | TODO |
+| Python | uv | TODO |
+| Terminal | Warp | TODO |
+| TODO | TODO | TODO |
+
+## 3. The (idempotent) script
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+have() { command -v "$1" >/dev/null 2>&1; }
+
+sudo apt-get update
+sudo apt-get install -y git curl build-essential ca-certificates
+
+have fnm || curl -fsSL https://fnm.vercel.app/install | bash
+have uv  || curl -LsSf https://astral.sh/uv/install.sh | sh
+# TODO: Docker from the official repo, Warp, git config, SSH keys
+```
+
+TODO: explain `set -euo pipefail` and why each step checks before installing.
+
+## 4. Test it in a VM before your real machine
+
+```bash
+multipass launch --name test 24.04
+multipass transfer setup.sh test:
+multipass exec test -- bash setup.sh
+```
+
+## 5. Mistakes I made
+
+- TODO: snap Docker with permission issues / `curl | bash` without reading the script.
+
+## 6. Repository
+
+TODO: dotfiles + setup.sh.

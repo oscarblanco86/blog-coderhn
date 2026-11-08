@@ -1,0 +1,99 @@
+---
+title: 'React más allá del to-do: un temporizador de intervalos que no se desfasa'
+description: 'Hooks, useReducer y manejo correcto del tiempo construyendo una herramienta real para entrenamientos de carrera.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: frontend
+tags: ['serie-mi-stack', 'react', 'hooks', 'typescript']
+draft: true
+summary:
+  stack: ['React', 'TypeScript', 'Vite', 'Vitest']
+  complexity: media
+  coverage: 'TODO (Vitest + Testing Library)'
+  role: 'Autor'
+  impact: 'TODO: ej. desfase < 50 ms tras 30 min vs. 4 s con setInterval ingenuo'
+repo: 'https://github.com/oscarblanco86/TODO'
+demo: 'https://TODO.example.com'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · React
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Temporizador de intervalos para running"
+   Ej. 8 × 400 m con 90 s de descanso. Enseña useReducer (máquina de
+   estados: idle/trabajo/descanso/fin), custom hooks, y por qué
+   setInterval se desfasa (calcular con timestamps, no contando ticks).
+   🎬 Video (8–10 min): gancho — dos temporizadores lado a lado durante
+   un entrenamiento real; tras 30 min uno va 4 s atrasado. Grabar
+   en la pista con el teléfono.
+
+B) DEMOSTRAR HABILIDAD — "Arreglar una lista lenta, medido"
+   Lista de 10 000 filas con filtro: perfilar con React DevTools
+   Profiler, aplicar virtualización / memo / React Compiler, medir INP
+   antes y después.
+   🎬 Video (6–8 min): escribir en el buscador con lag visible →
+   flame graph → arreglo → misma prueba fluida. Números en pantalla.
+
+C) ÚTIL PARA EL USUARIO — "5 custom hooks que copio en cada proyecto"
+   useLocalStorage, useDebounce, useFetch con AbortController,
+   useMediaQuery, useInterval; cada uno con su test.
+   🎬 Shorts (45–60 s) uno por hook: problema → hook → listo.
+
+Recomendada: A (diferente, conecta con run-science y es una demo usable).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué React (en una frase)
+
+TODO: el ecosistema y el modelo mental de "UI = f(estado)" me permiten construir interfaces
+complejas que siguen siendo fáciles de razonar.
+
+{/* 🎬 Escena: los dos temporizadores desfasados en la pista. */}
+
+## 2. El estado como máquina de estados
+
+```ts
+type Phase = 'idle' | 'work' | 'rest' | 'done';
+
+type State = {
+	phase: Phase;
+	rep: number;
+	phaseStartedAt: number | null; // timestamp, no un contador de ticks
+};
+
+type Action = { type: 'start'; now: number } | { type: 'tick'; now: number } | { type: 'reset' };
+
+function reducer(state: State, action: Action): State {
+	// TODO
+	return state;
+}
+```
+
+## 3. Por qué setInterval se desfasa
+
+TODO: explicar que el intervalo no está garantizado (pestaña en segundo plano, hilo ocupado) y
+que el tiempo restante debe calcularse como `duración − (ahora − inicio)`.
+
+{/* 🎬 Escena: gráfico del error acumulado de ambos enfoques. */}
+
+## 4. El custom hook
+
+```ts
+export function useIntervalTimer(plan: { reps: number; workMs: number; restMs: number }) {
+	// TODO: useReducer + requestAnimationFrame / setTimeout recalculando con Date.now()
+}
+```
+
+## 5. Tests
+
+TODO: test con `vi.useFakeTimers()`.
+
+## 6. Errores que cometí
+
+- TODO: guardar segundos restantes en el estado y decrementarlos / olvidar limpiar el efecto.
+
+## 7. Repositorio y demo
+
+TODO

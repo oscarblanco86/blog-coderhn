@@ -1,0 +1,70 @@
+---
+title: 'MCP: I wrote a server so Claude can use my own library'
+description: 'What the Model Context Protocol is, how to connect existing servers and how to build your own in TypeScript in under 100 lines.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: backend
+tags: ['my-stack-series', 'claude', 'mcp', 'typescript', 'ai']
+draft: true
+summary:
+  stack: ['MCP', 'TypeScript', 'Claude Code']
+  complexity: media
+  role: 'Author'
+  impact: 'TODO: e.g. Claude computes training zones with run-science instead of making them up'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · MCP — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/claude-mcp.mdx. */}
+
+## 1. What MCP is (in one sentence)
+
+TODO: a standard protocol for an AI agent to use external tools and data, the same for any client
+that supports it.
+
+## 2. Connecting an existing server
+
+```bash
+# TODO: verify current syntax
+claude mcp add my-server -- npx -y server-package
+```
+
+TODO: difference between local, project (`.mcp.json`) and user scope.
+
+## 3. My own server in TypeScript
+
+```ts
+// TODO: validate against the current version of @modelcontextprotocol/sdk
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { z } from 'zod';
+import { karvonen } from 'run-science'; // TODO: real import
+
+const server = new McpServer({ name: 'run-science', version: '0.1.0' });
+
+server.tool(
+	'karvonen_zone',
+	'Computes the target HR for a given intensity',
+	{ restHr: z.number(), maxHr: z.number(), intensity: z.number().min(0).max(1) },
+	async ({ restHr, maxHr, intensity }) => ({
+		content: [{ type: 'text', text: String(Math.round(karvonen(restHr, maxHr, intensity))) }],
+	}),
+);
+
+await server.connect(new StdioServerTransport());
+```
+
+## 4. Testing it
+
+TODO: MCP Inspector + a real conversation.
+
+## 5. Security
+
+TODO: validate input, never expose secrets, read-only by default.
+
+## 6. Mistakes I made
+
+- TODO: writing to stdout from a stdio server (breaks the protocol) / vague tool descriptions.
+
+## 7. Repository
+
+TODO

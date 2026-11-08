@@ -1,0 +1,74 @@
+---
+title: 'Production-ready Django from day 1 (not after the first incident)'
+description: 'The decisions I make when starting any Django project: custom user model, per-environment settings, pytest and Docker.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: backend
+tags: ['my-stack-series', 'python', 'django', 'backend']
+draft: true
+summary:
+  stack: ['Python', 'Django', 'PostgreSQL', 'pytest', 'Docker']
+  complexity: media
+  coverage: 'TODO (pytest-django)'
+  role: 'Author'
+  impact: 'TODO: e.g. template used in N projects · 0 painful User migrations'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Python + Django — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/python-django.mdx. */}
+
+## 1. Why Django (in one sentence)
+
+TODO: batteries included — ORM, admin, auth and migrations — to ship fast without giving up
+structure.
+
+## 2. Creating the project (the right way)
+
+```bash
+uv init my-project && cd my-project   # TODO: or venv + pip, depending on your flow
+uv add django psycopg[binary] django-environ
+uv add --dev pytest pytest-django factory-boy
+uv run django-admin startproject config .
+uv run python manage.py startapp accounts
+```
+
+## 3. The 5 decisions I make before the first migration
+
+### 3.1 Custom User model
+
+```python
+# accounts/models.py
+from django.contrib.auth.models import AbstractUser
+
+class User(AbstractUser):
+    pass  # even if empty: changing it later is painful
+```
+
+```python
+# config/settings/base.py
+AUTH_USER_MODEL = "accounts.User"
+```
+
+### 3.2 Per-environment settings
+
+### 3.3 Secrets out of the code
+
+### 3.4 Tests with pytest from the first model
+
+### 3.5 `check --deploy` in CI
+
+```bash
+python manage.py check --deploy --settings=config.settings.prod
+```
+
+## 4. Mistakes I made
+
+- TODO: `DEBUG=True` in production / `SECRET_KEY` in the repo / default User model.
+
+## 5. Cheat sheet
+
+TODO: final folder structure.
+
+## 6. Repository
+
+TODO: GitHub template repo ("Use this template").

@@ -1,0 +1,103 @@
+---
+title: 'Claude Skills: mis skills de fullstack, backend y frontend (y cómo escribir las tuyas)'
+description: 'Qué es una skill, cómo la carga Claude, y las tres que uso a diario para que el agente siga mis estándares sin repetírselos.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: calidad
+tags: ['serie-mi-stack', 'claude', 'skills', 'ia']
+draft: true
+summary:
+  stack: ['Claude Code', 'Agent Skills', 'Markdown']
+  complexity: media
+  role: 'Autor'
+  impact: 'TODO: ej. mismas convenciones en N proyectos sin reescribir instrucciones'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Claude Skills (fullstack · backend · frontend)
+(Verificar estructura vigente de SKILL.md y rutas: .claude/skills/,
+~/.claude/skills/, plugins.)
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "El mismo pedido, tres skills"
+   Pedir "agrega un endpoint de perfil de atleta con su pantalla" y
+   ejecutar con: sin skill / skill backend / skill frontend / skill
+   fullstack. Comparar resultados: estructura, tests, convenciones.
+   🎬 Video (8–10 min): cuatro ventanas en mosaico corriendo en
+   paralelo; al final, tabla comparativa y diff de cada resultado.
+
+B) DEMOSTRAR HABILIDAD — "Escribir una skill desde cero + medirla"
+   Codificar mis estándares backend (estructura Django, tests
+   obligatorios, settings por entorno) como skill; escribir casos de
+   prueba que comprueben que se activa cuando debe y no cuando no.
+   🎬 Video (8 min): escribir el SKILL.md en vivo; mostrar un caso
+   donde NO se activaba y cómo ajusté la descripción.
+
+C) ÚTIL PARA EL USUARIO — "Llévate mis skills"
+   Repo con las tres skills listas para copiar a .claude/skills/,
+   explicación de cada sección y cómo adaptarlas a tu stack.
+   🎬 Short (60 s): "copia esta carpeta y tu agente programa como tú".
+
+Recomendada: A (muy visual y explica la diferencia entre las tres).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Qué es una skill (en una frase)
+
+TODO: un paquete de instrucciones (y opcionalmente scripts) que el agente carga solo cuando la
+tarea lo necesita, en lugar de llenar el contexto con todo desde el inicio.
+
+{/* 🎬 Escena: los cuatro resultados en mosaico, sin explicar aún. */}
+
+## 2. Anatomía de una skill
+
+```text
+.claude/skills/
+└── backend/
+    ├── SKILL.md        → instrucciones + frontmatter (name, description)
+    └── scripts/        → opcional
+```
+
+```markdown
+---
+name: backend
+description: TODO — cuándo debe usarse (esta línea decide si se activa)
+---
+
+# Estándares backend
+- TODO
+```
+
+## 3. Mis tres skills
+
+### 3.1 backend
+
+TODO: qué reglas incluye (estructura, tests, seguridad, migraciones).
+
+### 3.2 frontend
+
+TODO: accesibilidad, rendimiento, componentes, tests.
+
+### 3.3 fullstack
+
+TODO: cómo coordina las otras dos (contratos de API, tipos compartidos).
+
+## 4. El experimento: mismo pedido, cuatro resultados
+
+| | Sin skill | backend | frontend | fullstack |
+| --- | --- | --- | --- | --- |
+| Tests incluidos | TODO | TODO | TODO | TODO |
+| Sigue convenciones | TODO | TODO | TODO | TODO |
+| Archivos tocados | TODO | TODO | TODO | TODO |
+
+{/* 🎬 Escena: tabla comparativa rellenándose celda por celda. */}
+
+## 5. Errores que cometí
+
+- TODO: descripciones vagas que nunca activan la skill / skills gigantes que deberían ser dos.
+
+## 6. Repositorio
+
+TODO

@@ -1,0 +1,58 @@
+---
+title: 'Notion as my blog CMS: from an idea on my phone to an MDX draft in the repo'
+description: 'My editorial calendar (posts and videos) lives in Notion; a script using the Notion API turns it into drafts ready to write.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: calidad
+tags: ['my-stack-series', 'notion', 'productivity', 'automation', 'nodejs']
+draft: true
+summary:
+  stack: ['Notion API', 'Node.js', 'GitHub Actions']
+  complexity: media
+  role: 'Author'
+  impact: 'TODO: e.g. idea → draft in the repo in < 1 min, no copy-paste'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Notion — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/notion.mdx. */}
+
+## 1. Why Notion (in one sentence)
+
+TODO: I capture ideas anywhere and organize them without friction; code decides when they turn
+into real work.
+
+## 2. The editorial database
+
+| Property | Type | Use |
+| -------- | ---- | --- |
+| Title | title | TODO |
+| Status | status | idea · script · recorded · published |
+| Pillar | select | backend · frontend · calidad · opensource |
+| Language | multi-select | es · en |
+| Slug | text | file name |
+| Video | url | TODO |
+
+## 3. The script: Notion → MDX
+
+```ts
+// scripts/notion-to-mdx.ts — TODO: validate against the current API
+import { Client } from '@notionhq/client';
+import { writeFile, access } from 'node:fs/promises';
+
+const notion = new Client({ auth: process.env.NOTION_TOKEN });
+
+// TODO: query the database filtering by Status = "ready to write"
+// TODO: for each row, if the file doesn't exist, write the frontmatter with draft: true
+```
+
+## 4. Automating it with GitHub Actions
+
+TODO: scheduled workflow that runs the script and opens a PR.
+
+## 5. Mistakes I made
+
+- TODO: an integration token with access to the whole workspace / overwriting a draft already written.
+
+## 6. Repository and template
+
+TODO: link to the public Notion template and the script.

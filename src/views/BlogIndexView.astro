@@ -1,0 +1,40 @@
+---
+import PostCard from '../components/PostCard.astro';
+import { PILLARS } from '../consts';
+import { localizePath, useTranslations, type Lang } from '../i18n/ui';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPosts } from '../lib/posts';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const posts = await getPosts(lang);
+---
+
+<BaseLayout title={t('blog.title')} description={t('blog.description')}>
+	<h1><span class="mono prompt">$</span> ls ./blog</h1>
+	<nav class="filters mono" aria-label={t('blog.filters')}>
+		{
+			Object.entries(PILLARS).map(([k, p]) => (
+				<a class="tag" href={localizePath(`/pilares/${k}`, lang)}>
+					{p.icon} {p.short}
+				</a>
+			))
+		}
+	</nav>
+	{posts.length === 0 && <p class="muted">{t('blog.empty')}</p>}
+	{posts.map((post) => <PostCard post={post} />)}
+</BaseLayout>
+<style>
+	.prompt {
+		color: var(--accent);
+	}
+	.filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5em;
+		margin-bottom: 1em;
+	}
+</style>

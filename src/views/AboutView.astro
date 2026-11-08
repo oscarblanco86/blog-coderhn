@@ -1,0 +1,90 @@
+---
+import { AUTHOR, PILLARS } from '../consts';
+import { localizePath, type Lang } from '../i18n/ui';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const es = lang === 'es';
+const stack = ['Python', 'Django', 'Flask', 'PostgreSQL', 'Supabase', 'Docker', 'Traefik', 'Linux', 'TypeScript', 'Node.js', 'React', 'Vue 3', 'Angular', 'Expo', 'Astro', 'Tailwind CSS'];
+---
+
+<BaseLayout title="About" description={`${AUTHOR.name} — ${AUTHOR.role}`}>
+	<p class="mono muted">$ whoami</p>
+	<h1>{AUTHOR.name}</h1>
+	<p class="lead">{AUTHOR.role}</p>
+
+	<!-- TODO: reescribe este texto con tu voz (en ambos idiomas). -->
+	{
+		es ? (
+			<>
+				<p>
+					Soy ingeniero de software orientado a backend, con foco en rendimiento frontend y una formación poco
+					común en el sector: <strong>gestión de calidad formal (ISO 9000)</strong>. Me interesa construir
+					sistemas que funcionen en producción bajo restricciones reales — de presupuesto, de infraestructura y
+					de tiempo — y documentar las decisiones que hay detrás.
+				</p>
+				<p>
+					Este blog no es de tutoriales de sintaxis. Cada artículo es un caso de estudio: el problema, las
+					restricciones, la arquitectura propuesta, el código clave y lo que medí al final.
+				</p>
+			</>
+		) : (
+			<>
+				<p>
+					I'm a backend-oriented software engineer with a focus on frontend performance and an uncommon
+					background in this field: <strong>formal quality management (ISO 9000)</strong>. I care about building
+					systems that work in production under real constraints — budget, infrastructure and time — and about
+					documenting the decisions behind them.
+				</p>
+				<p>
+					This is not a syntax-tutorial blog. Every article is a case study: the problem, the constraints, the
+					proposed architecture, the key code and what I measured at the end.
+				</p>
+			</>
+		)
+	}
+
+	<h2>{es ? 'Sobre qué escribo' : 'What I write about'}</h2>
+	<ul>
+		{
+			Object.entries(PILLARS).map(([k, p]) => (
+				<li>
+					<a href={localizePath(`/pilares/${k}`, lang)}>
+						{p.icon} {p.label[lang]}
+					</a>{' '}
+					— <span class="muted">{p.description[lang]}</span>
+				</li>
+			))
+		}
+	</ul>
+
+	<h2>{es ? 'Stack habitual' : 'Day-to-day stack'}</h2>
+	<p class="stack">{stack.map((s) => <span class="tag">{s}</span>)}</p>
+
+	<h2>{es ? 'Contacto' : 'Contact'}</h2>
+	<ul class="mono contact">
+		<li>github → <a href={AUTHOR.github} target="_blank" rel="noopener">{AUTHOR.githubUser}</a></li>
+		{AUTHOR.linkedin && <li>linkedin → <a href={AUTHOR.linkedin} target="_blank" rel="noopener">{es ? 'perfil' : 'profile'}</a></li>}
+		{AUTHOR.email && <li>email → <a href={`mailto:${AUTHOR.email}`}>{AUTHOR.email}</a></li>}
+		{AUTHOR.portfolio && <li>web → <a href={AUTHOR.portfolio} target="_blank" rel="noopener">{AUTHOR.portfolio.replace('https://', '')}</a></li>}
+	</ul>
+</BaseLayout>
+
+<style>
+	.lead {
+		color: var(--text-muted);
+	}
+	.stack {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4em;
+	}
+	.contact {
+		list-style: none;
+		padding: 0;
+		font-size: 0.85em;
+	}
+</style>

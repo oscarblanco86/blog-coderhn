@@ -1,0 +1,81 @@
+---
+title: 'Linux for developers: diagnosing a slow server in 5 minutes'
+description: 'The Linux commands I actually use, learned by solving real incidents rather than memorizing lists.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: backend
+tags: ['my-stack-series', 'linux', 'devops', 'bash']
+draft: true
+summary:
+  stack: ['Linux', 'Bash', 'systemd']
+  complexity: baja
+  role: 'Author'
+  impact: 'TODO: e.g. from "the server is slow" to root cause in < 5 min'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Linux — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/linux.mdx. */}
+
+## 1. Why Linux (in one sentence)
+
+TODO: almost everything I deploy ends up on a Linux server; understanding it is the difference
+between "restart and pray" and finding the root cause.
+
+## 2. Setting up the lab
+
+```bash
+# A cheap VPS or a local VM with Multipass
+multipass launch --name lab 24.04
+multipass shell lab
+# Script that breaks the server on purpose (included in the repo)
+curl -fsSL TODO/break.sh | bash
+```
+
+## 3. The diagnosis, step by step
+
+### 3.1 Is it alive? Load and memory
+
+```bash
+uptime          # load average
+free -h         # memory
+htop            # who is consuming
+```
+
+### 3.2 Is there disk space?
+
+```bash
+df -h
+sudo du -xh / --max-depth=2 | sort -h | tail -20
+```
+
+### 3.3 What do the logs say?
+
+```bash
+journalctl -u nginx --since "10 min ago"
+sudo tail -f /var/log/syslog
+```
+
+### 3.4 Who owns the port?
+
+```bash
+sudo ss -tulpn | grep :80
+```
+
+TODO: explain each finding and how it relates to the symptom.
+
+## 4. Mistakes I made
+
+- TODO: `rm -rf` in the wrong directory / logs without rotation / chmod 777 "to make it work".
+
+## 5. Cheat sheet
+
+| Symptom | Command |
+| ------- | ------- |
+| Slow | `uptime`, `htop` |
+| Disk full | `df -h`, `du` |
+| Service won't start | `systemctl status`, `journalctl -u` |
+| Port in use | `ss -tulpn` |
+
+## 6. Repository
+
+TODO: repo with `break.sh`, `fix.sh` and the cheat sheet as a PDF.

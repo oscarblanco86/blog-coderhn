@@ -1,0 +1,128 @@
+---
+title: 'run-science a mano: la misma librería en Python y JavaScript, con resultados idénticos'
+description: 'Escribir dos paquetes (PyPI y npm) que calculan VDOT y zonas Karvonen, garantizando con vectores de prueba compartidos que ambos den exactamente lo mismo.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: opensource
+tags: ['serie-mi-stack', 'run-science', 'python', 'javascript', 'open-source', 'ciencia-del-deporte']
+draft: true
+summary:
+  stack: ['Python', 'TypeScript', 'pytest', 'Vitest', 'PyPI', 'npm']
+  complexity: media
+  coverage: 'TODO (pytest + Vitest)'
+  role: 'Autor y mantenedor'
+  impact: 'TODO: ej. 2 paquetes publicados · N vectores de prueba idénticos en ambos lenguajes'
+repo: 'https://github.com/oscarblanco86/run-science' # TODO: verificar URL
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · run-science (Python + JS)
+Relación con es/run-science-metricas-fisiologicas.mdx: aquel es el
+caso de estudio del diseño; este es la serie práctica de construirla a
+mano y publicarla en dos ecosistemas. Enlazarlos entre sí.
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Una librería, dos lenguajes, cero diferencias"
+   API idiomática en cada lenguaje (snake_case + dataclasses en Python,
+   camelCase + objetos en TS) pero con un único archivo de vectores de
+   prueba en JSON que ambos suites consumen. Si Python y JS difieren
+   en un decimal, el CI falla.
+   🎬 Video (8–10 min): pantalla dividida Python | TypeScript escribiendo
+   la misma función; correr ambos tests contra el mismo JSON. Gancho:
+   "mi versión en JS daba 0.1 distinto que la de Python, y este es el
+   porqué" (redondeo / coma flotante).
+
+B) DEMOSTRAR HABILIDAD — "Publicar a mano, bien hecho"
+   Python: pyproject.toml, build, TestPyPI primero, luego PyPI con
+   Trusted Publishing. JS: package.json con "exports", tipos, ESM,
+   npm publish con provenance. Semver, CHANGELOG, release desde CI al
+   crear un tag.
+   🎬 Video (10 min): del `git tag v0.1.0` a `pip install run-science`
+   y `npm i run-science` funcionando en una máquina limpia.
+
+C) ÚTIL PARA CORREDORES — "Calcula tu VDOT y tus zonas"
+   Explicar qué es VDOT y Karvonen para no programadores, con una
+   calculadora web pequeña que usa el paquete JS.
+   🎬 Video (5 min) dirigido a corredores: "con tu último 5K, así
+   sacas tus ritmos de entrenamiento".
+
+Recomendada: A como serie de varias partes; B como segunda parte.
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué dos lenguajes
+
+TODO: los científicos del deporte y analistas usan Python; las apps y webs usan JavaScript.
+Una fórmula, dos ecosistemas.
+
+Si te interesa el diseño de la librería, lee primero
+[el caso de estudio de run-science](/blog/run-science-metricas-fisiologicas/).
+
+{/* 🎬 Escena: pantalla dividida, mismo cálculo en ambos lenguajes. */}
+
+## 2. Estructura del monorepo
+
+```text
+run-science/
+├── vectors/             → casos de prueba compartidos (JSON)
+│   ├── karvonen.json
+│   └── vdot.json
+├── python/              → paquete PyPI
+│   ├── pyproject.toml
+│   └── src/run_science/
+└── js/                  → paquete npm
+    ├── package.json
+    └── src/
+```
+
+## 3. Vectores de prueba compartidos
+
+```json
+[
+	{ "restHr": 50, "maxHr": 190, "intensity": 0.6, "expected": 134 },
+	{ "restHr": 50, "maxHr": 190, "intensity": 0.7, "expected": 148 }
+]
+```
+
+## 4. La misma función, idiomática en cada lenguaje
+
+```python
+# python/src/run_science/hr.py
+def karvonen(rest_hr: float, max_hr: float, intensity: float) -> int:
+    if max_hr <= rest_hr:
+        raise ValueError("max_hr debe ser mayor que rest_hr")
+    if not 0 <= intensity <= 1:
+        raise ValueError("intensity debe estar entre 0 y 1")
+    return round(rest_hr + intensity * (max_hr - rest_hr))
+```
+
+```ts
+// js/src/hr.ts
+export function karvonen(restHr: number, maxHr: number, intensity: number): number {
+	if (maxHr <= restHr) throw new RangeError('maxHr debe ser mayor que restHr');
+	if (intensity < 0 || intensity > 1) throw new RangeError('intensity debe estar entre 0 y 1');
+	return Math.round(restHr + intensity * (maxHr - restHr));
+}
+```
+
+TODO: ojo con el redondeo. `round()` de Python usa redondeo bancario (2.5 → 2) y `Math.round` de JS
+no (2.5 → 3). Este es exactamente el tipo de diferencia que atrapan los vectores compartidos.
+
+{/* 🎬 Escena: el test que falla por el redondeo distinto, y el arreglo. */}
+
+## 5. Los tests leen el mismo JSON
+
+TODO: test parametrizado en pytest y `test.each` en Vitest.
+
+## 6. Publicar (parte 2)
+
+TODO: PyPI + npm (ver propuesta B).
+
+## 7. Errores que cometí
+
+- TODO
+
+## 8. Repositorio
+
+TODO

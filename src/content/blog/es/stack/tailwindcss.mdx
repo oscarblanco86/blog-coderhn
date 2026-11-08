@@ -1,0 +1,101 @@
+---
+title: 'Tailwind CSS v4: un sistema de diseño con tokens, modo oscuro y menos de 10 KB de CSS'
+description: 'Más allá de "clases utilitarias": tokens con @theme, variantes para modo oscuro y una medición real del CSS que llega al usuario.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: frontend
+tags: ['serie-mi-stack', 'tailwindcss', 'css', 'design-system']
+draft: true
+summary:
+  stack: ['Tailwind CSS v4', 'Vite', 'TODO']
+  complexity: media
+  role: 'Autor'
+  impact: 'TODO: ej. CSS final 8 KB gzip · 1 archivo de tokens para claro/oscuro'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Tailwind CSS
+(Verificar sintaxis vigente de v4: @import "tailwindcss", @theme,
+@custom-variant.)
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "De captura de pantalla a componente"
+   Tomar una interfaz real (una tarjeta de entrenamiento de Strava, un
+   panel de admin) y reconstruirla en vivo, explicando cada decisión
+   de layout. Nada de "un botón azul".
+   🎬 Video (8–10 min): imagen de referencia a la izquierda, navegador
+   a la derecha, time-lapse hasta que coinciden. Superponer ambas con
+   opacidad al final.
+
+B) DEMOSTRAR HABILIDAD — "Sistema de diseño con tokens"
+   @theme con colores, espaciados y tipografías como tokens; modo oscuro
+   con una variante personalizada (data-theme como en este blog);
+   componentes con @apply solo donde tiene sentido; medir el CSS final.
+   🎬 Video (8 min): cambiar UN token y ver cómo cambia toda la app;
+   alternar claro/oscuro; mostrar el tamaño del CSS en DevTools.
+
+C) ÚTIL PARA EL USUARIO — "Tailwind para quien ya sabe CSS"
+   Tabla de equivalencias CSS ↔ utilidades (flex, grid, responsive,
+   estados), patrones copiables (centrar, grid de tarjetas, sticky
+   header) y cuándo NO usar Tailwind.
+   🎬 Shorts (30–45 s): "esto en CSS / esto en Tailwind".
+
+Recomendada: B (muestra criterio de arquitectura de frontend).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Tailwind (en una frase)
+
+TODO: el estilo vive junto al marcado y el sistema de diseño se vuelve una restricción útil, no
+una guía que nadie lee.
+
+{/* 🎬 Escena: cambiar un token y ver toda la interfaz cambiar. */}
+
+## 2. Instalación (v4)
+
+```bash
+bun add tailwindcss @tailwindcss/vite
+```
+
+```css
+/* src/styles.css */
+@import 'tailwindcss';
+```
+
+## 3. Tokens con @theme
+
+```css
+@theme {
+	--color-brand: oklch(0.65 0.18 145);
+	--color-surface: oklch(0.98 0 0);
+	--font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+```
+
+TODO: cómo se convierten en utilidades (`bg-brand`, `font-mono`).
+
+## 4. Modo oscuro con data-theme
+
+```css
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+```
+
+TODO: conectar con un botón claro/oscuro/auto (como el de este blog).
+
+{/* 🎬 Escena: alternar claro/oscuro/auto. */}
+
+## 5. ¿Cuánto CSS llega al usuario?
+
+| Escenario | CSS (gzip) |
+| --------- | ---------- |
+| TODO | TODO |
+
+## 6. Errores que cometí
+
+- TODO: construir nombres de clases dinámicamente (`bg-${color}`) / abusar de @apply.
+
+## 7. Repositorio
+
+TODO

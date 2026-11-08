@@ -1,0 +1,89 @@
+---
+title: 'Hostinger como centro de mi dominio: un DNS, varios proyectos, cero caos'
+description: 'Cómo organizo coderhn.dev y sus subdominios (blog, apps, APIs) con Hostinger como registrador y DNS, aunque cada proyecto viva en un hosting distinto.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: backend
+tags: ['serie-mi-stack', 'hostinger', 'dns', 'dominios', 'devops']
+draft: true
+summary:
+  stack: ['Hostinger', 'DNS', 'Netlify', 'TODO: VPS']
+  complexity: baja
+  role: 'Autor'
+  impact: 'TODO: ej. N subdominios en N proveedores gestionados desde un solo panel'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Hostinger
+(Verificar nombres actuales de planes y del panel hPanel antes de publicar.)
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Un dominio, muchos proyectos" (mi caso real)
+   Mapa de coderhn.dev: blog. → Netlify, mathkids. → TODO, api. → VPS…
+   Registros A, CNAME, TXT (verificación), MX; TTL y propagación;
+   documentar el DNS como código (tabla en el repo).
+   🎬 Video (6–8 min): diagrama animado del dominio con flechas a cada
+   proveedor; luego crear un subdominio nuevo en vivo y verlo resolver
+   con `dig`.
+
+B) DEMOSTRAR HABILIDAD — "VPS de Hostinger con Docker + Traefik"
+   Desplegar una app Django en un VPS con Docker Compose y Traefik
+   (HTTPS automático con Let's Encrypt), comparar costo mensual vs.
+   PaaS equivalente.
+   🎬 Video (10 min): VPS vacío → app en HTTPS. Tabla de costos final.
+
+C) ÚTIL PARA EL USUARIO — "¿Hosting compartido, VPS o PaaS?"
+   Guía de decisión para principiantes y pequeños negocios: cuándo
+   basta el compartido, cuándo necesitas VPS, cuándo un PaaS gratis.
+   🎬 Short (60 s): árbol de decisión en pantalla.
+
+Recomendada: A (es tu infraestructura real y conecta con Netlify y Math Kids).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Hostinger (en una frase)
+
+TODO: precio del dominio y un panel de DNS sencillo; no tengo que alojar todo ahí para
+aprovecharlo.
+
+{/* 🎬 Escena: diagrama del dominio con los subdominios y sus proveedores. */}
+
+## 2. El mapa de mi dominio
+
+| Subdominio | Apunta a | Tipo de registro |
+| ---------- | -------- | ---------------- |
+| coderhn.dev | TODO | A / ALIAS |
+| blog.coderhn.dev | Netlify | CNAME |
+| mathkids.coderhn.dev | TODO | TODO |
+| TODO | TODO | TODO |
+
+## 3. Tipos de registro que de verdad uso
+
+- **A / AAAA:** TODO
+- **CNAME:** TODO
+- **TXT:** verificación de dominio, SPF. TODO
+- **MX:** TODO
+
+## 4. Crear un subdominio y verificarlo
+
+```bash
+dig +short blog.coderhn.dev CNAME
+dig +short blog.coderhn.dev
+```
+
+TODO: TTL y por qué a veces "no funciona" durante la propagación.
+
+{/* 🎬 Escena: crear el registro en el panel y ejecutar dig hasta que resuelve. */}
+
+## 5. DNS documentado como código
+
+TODO: mantener una tabla `dns.md` en un repo privado con cada registro y su propósito.
+
+## 6. Errores que cometí
+
+- TODO: borrar un registro TXT de verificación / TTL alto antes de una migración.
+
+## 7. Recursos
+
+TODO

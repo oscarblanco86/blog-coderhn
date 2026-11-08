@@ -1,0 +1,90 @@
+---
+title: 'run-science by hand: the same library in Python and JavaScript, with identical results'
+description: 'Writing two packages (PyPI and npm) that compute VDOT and Karvonen zones, using shared test vectors to guarantee both return exactly the same thing.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: opensource
+tags: ['my-stack-series', 'run-science', 'python', 'javascript', 'open-source', 'sports-science']
+draft: true
+summary:
+  stack: ['Python', 'TypeScript', 'pytest', 'Vitest', 'PyPI', 'npm']
+  complexity: media
+  coverage: 'TODO (pytest + Vitest)'
+  role: 'Author and maintainer'
+  impact: 'TODO: e.g. 2 published packages · N identical test vectors in both languages'
+repo: 'https://github.com/oscarblanco86/run-science' # TODO: verify URL
+---
+
+{/* DRAFT · "My stack" series · run-science (Python + JS) — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/run-science-python-js.mdx. */}
+
+## 1. Why two languages
+
+TODO: sports scientists and analysts use Python; apps and websites use JavaScript. One formula,
+two ecosystems.
+
+If you're interested in the library's design, read
+[the run-science case study](/en/blog/run-science-metricas-fisiologicas/) first.
+
+## 2. Monorepo structure
+
+```text
+run-science/
+├── vectors/             → shared test cases (JSON)
+│   ├── karvonen.json
+│   └── vdot.json
+├── python/              → PyPI package
+│   ├── pyproject.toml
+│   └── src/run_science/
+└── js/                  → npm package
+    ├── package.json
+    └── src/
+```
+
+## 3. Shared test vectors
+
+```json
+[
+	{ "restHr": 50, "maxHr": 190, "intensity": 0.6, "expected": 134 },
+	{ "restHr": 50, "maxHr": 190, "intensity": 0.7, "expected": 148 }
+]
+```
+
+## 4. The same function, idiomatic in each language
+
+```python
+# python/src/run_science/hr.py
+def karvonen(rest_hr: float, max_hr: float, intensity: float) -> int:
+    if max_hr <= rest_hr:
+        raise ValueError("max_hr must be greater than rest_hr")
+    if not 0 <= intensity <= 1:
+        raise ValueError("intensity must be between 0 and 1")
+    return round(rest_hr + intensity * (max_hr - rest_hr))
+```
+
+```ts
+// js/src/hr.ts
+export function karvonen(restHr: number, maxHr: number, intensity: number): number {
+	if (maxHr <= restHr) throw new RangeError('maxHr must be greater than restHr');
+	if (intensity < 0 || intensity > 1) throw new RangeError('intensity must be between 0 and 1');
+	return Math.round(restHr + intensity * (maxHr - restHr));
+}
+```
+
+TODO: watch out for rounding. Python's `round()` uses banker's rounding (2.5 → 2) while JS's
+`Math.round` doesn't (2.5 → 3). That's exactly the kind of difference shared vectors catch.
+
+## 5. Both test suites read the same JSON
+
+TODO: parametrized test in pytest and `test.each` in Vitest.
+
+## 6. Publishing (part 2)
+
+TODO: PyPI + npm.
+
+## 7. Mistakes I made
+
+- TODO
+
+## 8. Repository
+
+TODO

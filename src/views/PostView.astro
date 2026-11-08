@@ -1,0 +1,19 @@
+---
+import { render } from 'astro:content';
+import { localizePath, otherLang } from '../i18n/ui';
+import BlogPost from '../layouts/BlogPost.astro';
+import { getTranslation, postLang, postUrl, readingTime, type Post } from '../lib/posts';
+
+interface Props {
+	post: Post;
+}
+const { post } = Astro.props;
+const lang = postLang(post);
+const translation = await getTranslation(post, otherLang(lang));
+const altHref = translation ? postUrl(translation) : localizePath('/blog/', otherLang(lang));
+const { Content } = await render(post);
+---
+
+<BlogPost data={post.data} minutes={readingTime(post.body)} lang={lang} altHref={altHref} altExists={!!translation}>
+	<Content />
+</BlogPost>

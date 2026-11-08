@@ -1,12 +1,17 @@
 ---
 import { AUTHOR } from '../consts';
+import { localizePath, type Lang } from '../i18n/ui';
+
+interface Props {
+	lang: Lang;
+}
 const year = new Date().getFullYear();
 const links = [
 	{ label: 'github', href: AUTHOR.github },
 	{ label: 'linkedin', href: AUTHOR.linkedin },
 	{ label: 'portfolio', href: AUTHOR.portfolio },
 	{ label: 'email', href: AUTHOR.email ? `mailto:${AUTHOR.email}` : '' },
-	{ label: 'rss', href: '/rss.xml' },
+	{ label: 'rss', href: localizePath('/rss.xml', Astro.props.lang) },
 ].filter((l) => l.href);
 ---
 

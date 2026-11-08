@@ -1,0 +1,94 @@
+---
+import PostCard from '../components/PostCard.astro';
+import Terminal from '../components/Terminal.astro';
+import { AUTHOR, PILLARS, SITE_TITLE } from '../consts';
+import { localizePath, useTranslations, type Lang } from '../i18n/ui';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPosts } from '../lib/posts';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const href = (p: string) => localizePath(p, lang);
+const latest = (await getPosts(lang)).slice(0, 5);
+---
+
+<BaseLayout title={SITE_TITLE} description={t('site.description')}>
+	<section class="hero">
+		<p class="mono kicker">// {AUTHOR.name} · {AUTHOR.location}</p>
+		<h1>{t('home.h1')}</h1>
+		<p class="lead" set:html={t('home.lead')} />
+	</section>
+
+	<Terminal lang={lang} />
+
+	<section class="pillars">
+		<h2 class="mono section-title">{t('home.pillars')}</h2>
+		<ul>
+			{
+				Object.entries(PILLARS).map(([k, p]) => (
+					<li>
+						<a href={href(`/pilares/${k}`)}>
+							<span>{p.icon}</span> {p.label[lang]}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	<section>
+		<h2 class="mono section-title">{t('home.recent')}</h2>
+		{latest.length === 0 && <p class="muted">{t('home.empty')}</p>}
+		{latest.map((post) => <PostCard post={post} />)}
+		<p><a class="mono more" href={href('/blog')}>ls ./blog --all →</a></p>
+	</section>
+</BaseLayout>
+<style>
+	.hero {
+		margin: 1em 0 2.5em;
+	}
+	.kicker {
+		color: var(--accent);
+		font-size: 0.8em;
+		margin-bottom: 0.6em;
+	}
+	.lead {
+		font-size: 1.05em;
+		color: var(--text-muted);
+	}
+	.lead strong {
+		color: var(--text);
+	}
+	.section-title {
+		font-size: 0.9em;
+		color: var(--text-muted);
+		margin: 2.5em 0 0.5em;
+	}
+	.pillars ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		gap: 0.6em;
+	}
+	.pillars a {
+		display: block;
+		padding: 0.7em 1em;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		background: var(--bg-soft);
+		color: var(--text);
+		text-decoration: none;
+		font-size: 0.9em;
+	}
+	.pillars a:hover {
+		border-color: var(--accent);
+	}
+	.more {
+		font-size: 0.85em;
+	}
+</style>

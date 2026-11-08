@@ -4,7 +4,8 @@ import { z } from 'astro/zod';
 import { PILLAR_KEYS } from './consts';
 
 const blog = defineCollection({
-	loader: glob({ base: './src/content/blog', pattern: '**/[^_]*.{md,mdx}' }),
+	// Un post por idioma: src/content/blog/es/<slug>.mdx y src/content/blog/en/<slug>.mdx
+	loader: glob({ base: './src/content/blog', pattern: '{es,en}/**/[^_]*.{md,mdx}' }),
 	schema: ({ image }) =>
 		z.object({
 			title: z.string(),

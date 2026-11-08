@@ -1,0 +1,10 @@
+---
+import { PILLAR_KEYS, type PillarKey } from '../../../consts';
+import PillarView from '../../../views/PillarView.astro';
+
+export function getStaticPaths() {
+	return PILLAR_KEYS.map((pillar) => ({ params: { pillar } }));
+}
+---
+
+<PillarView lang="en" pillar={Astro.params.pillar as PillarKey} />

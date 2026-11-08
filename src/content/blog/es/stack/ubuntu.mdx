@@ -1,0 +1,96 @@
+---
+title: 'Ubuntu como estación de trabajo de desarrollo: de instalación limpia a productivo en 15 minutos'
+description: 'Mi script de post-instalación para Ubuntu: herramientas, versiones de Node y Python, Docker y terminal, reproducible en cualquier máquina.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: backend
+tags: ['serie-mi-stack', 'ubuntu', 'linux', 'dotfiles', 'productividad']
+draft: true
+summary:
+  stack: ['Ubuntu', 'Bash', 'apt', 'TODO']
+  complexity: baja
+  role: 'Autor'
+  impact: 'TODO: ej. laptop nueva lista para trabajar en 15 min con un solo comando'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Ubuntu
+(Diferencia con el post de Linux: aquel trata de servidores e
+incidentes; este de Ubuntu como escritorio de desarrollo.)
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Mi script de post-instalación"
+   Script idempotente: apt + paquetes esenciales, Docker oficial (no el
+   de snap), Node con fnm, Python con uv, Warp, git config, llaves SSH,
+   fuentes. Se puede correr dos veces sin romper nada.
+   🎬 Video (6–8 min): VM con Ubuntu recién instalado → un comando →
+   time-lapse → editor abierto con un proyecto corriendo. Cronómetro.
+
+B) DEMOSTRAR HABILIDAD — "Ubuntu Server LTS en producción a largo plazo"
+   Ciclo de vida LTS, unattended-upgrades, Livepatch, cómo planear la
+   actualización entre LTS sin caída (probar en staging, snapshots).
+   🎬 Video (8 min): línea de tiempo de versiones LTS; actualización
+   real de una VM con snapshot de respaldo.
+
+C) ÚTIL PARA EL USUARIO — "Vengo de Windows: ¿dual boot, WSL2 o Ubuntu completo?"
+   Guía de decisión con pros y contras reales para devs.
+   🎬 Short (60 s) con el árbol de decisión.
+
+Recomendada: A (útil y reutilizable; se complementa con el post de Linux).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Ubuntu (en una frase)
+
+TODO: el mismo sistema que corre en mis servidores, con soporte largo y documentación para
+cualquier problema.
+
+{/* 🎬 Escena: Ubuntu recién instalado, escritorio vacío. */}
+
+## 2. Qué instala el script
+
+| Categoría | Herramienta | Por qué esta y no otra |
+| --------- | ----------- | ---------------------- |
+| Contenedores | Docker Engine (repo oficial) | TODO |
+| Node.js | fnm | TODO |
+| Python | uv | TODO |
+| Terminal | Warp | TODO |
+| TODO | TODO | TODO |
+
+## 3. El script (idempotente)
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+have() { command -v "$1" >/dev/null 2>&1; }
+
+sudo apt-get update
+sudo apt-get install -y git curl build-essential ca-certificates
+
+have fnm || curl -fsSL https://fnm.vercel.app/install | bash
+have uv  || curl -LsSf https://astral.sh/uv/install.sh | sh
+# TODO: Docker desde el repo oficial, Warp, git config, llaves SSH
+```
+
+TODO: explicar `set -euo pipefail` y por qué cada paso comprueba antes de instalar.
+
+{/* 🎬 Escena: correr el script una segunda vez y ver que no hace nada. */}
+
+## 4. Probarlo en una VM antes de tu máquina real
+
+```bash
+multipass launch --name prueba 24.04
+multipass transfer setup.sh prueba:
+multipass exec prueba -- bash setup.sh
+```
+
+## 5. Errores que cometí
+
+- TODO: Docker de snap con problemas de permisos / `curl | bash` sin leer el script.
+
+## 6. Repositorio
+
+TODO: dotfiles + setup.sh.

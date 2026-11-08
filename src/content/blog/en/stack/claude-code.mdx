@@ -1,0 +1,67 @@
+---
+title: 'Claude Code on a real project: how I use it without losing control of quality'
+description: 'CLAUDE.md, plan mode, permissions, hooks and code review: my workflow for working with an AI agent while staying accountable for every line.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: calidad
+tags: ['my-stack-series', 'claude', 'claude-code', 'ai', 'productivity']
+draft: true
+summary:
+  stack: ['Claude Code', 'Git', 'TODO']
+  complexity: media
+  role: 'Author'
+  impact: 'TODO: e.g. the drafts of this series generated and reviewed in 1 session'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Claude Code — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/claude-code.mdx. */}
+
+## 1. Why Claude Code (in one sentence)
+
+TODO: an agent that reads the repo, runs commands and edits files; useful only if you give it
+clear context and limits.
+
+## 2. Context: CLAUDE.md
+
+```markdown
+# CLAUDE.md
+- Stack: TODO
+- Commands: `bun run dev`, `bun run build`
+- Rules: every new post gets `draft: true`; don't touch `src/consts.ts` without asking.
+```
+
+TODO: what to put in it and what not to (don't duplicate what the code already says).
+
+## 3. Think before writing: plan mode
+
+TODO: example of an approved plan vs. a rejected one.
+
+## 4. Limits: permissions
+
+TODO: which commands I always allow, which I confirm, which never.
+
+## 5. Automatic quality control: hooks
+
+```json
+{
+	"hooks": {
+		"PostToolUse": [
+			{ "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "TODO: bun run lint" }] }
+		]
+	}
+}
+```
+
+TODO: verify the current format in the docs.
+
+## 6. Review: I'm still the one responsible
+
+TODO: how I review the diff, when I ask for `/code-review`, when I throw everything away and start over.
+
+## 7. Mistakes I made
+
+- TODO: vague requests / accepting changes without reading the diff / sessions that run too long.
+
+## 8. Repository
+
+TODO: sample CLAUDE.md and settings.

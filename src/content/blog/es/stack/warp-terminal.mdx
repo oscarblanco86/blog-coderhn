@@ -1,0 +1,93 @@
+---
+title: 'Warp Terminal: convertir los runbooks de tu proyecto en workflows de un clic'
+description: 'Cómo uso Warp para que levantar, probar y depurar un proyecto deje de depender de la memoria de alguien.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: backend
+tags: ['serie-mi-stack', 'warp', 'terminal', 'productividad']
+draft: true
+summary:
+  stack: ['Warp', 'zsh', 'YAML']
+  complexity: baja
+  role: 'Autor'
+  impact: 'TODO: ej. onboarding de un repo de 1 h → 10 min'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Warp Terminal
+(Verificar nombres de features contra la versión actual de Warp antes
+de publicar: Workflows, Launch Configurations, Warp Drive, Agent Mode.)
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Runbooks ejecutables"
+   Tomar el README de "cómo levantar el proyecto" y convertirlo en
+   Workflows parametrizados versionados junto al repo, más una Launch
+   Configuration que abre 3 paneles: dev server, logs de Docker, tests.
+   🎬 Video (5–6 min): pantalla dividida — compañero "nuevo" siguiendo
+   el README a mano vs. un clic en Warp. Cronómetro visible en ambos.
+
+B) DEMOSTRAR HABILIDAD — "Mi setup de terminal reproducible"
+   Dotfiles + tema + launch configs + atajos instalables con un solo
+   script en una máquina nueva. Muestra disciplina de automatización.
+   🎬 Video (4–5 min): máquina/VM limpia → `./install.sh` → terminal
+   idéntica a la mía. Gancho: "formateé mi laptop y en 3 min volví".
+
+C) ÚTIL PARA EL USUARIO — "10 cosas de Warp que no estás usando"
+   Blocks, compartir un bloque de error como enlace, command palette,
+   búsqueda de comandos con IA, edición de comandos como en un IDE…
+   🎬 Shorts verticales (20–30 s) uno por feature, con GIF en el post.
+
+Recomendada: A (lo diferencia de las reseñas genéricas de Warp).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Warp (en una frase)
+
+TODO: la terminal es donde paso más horas; Warp me permite **guardar conocimiento** (workflows) en
+lugar de depender de mi historial de comandos.
+
+{/* 🎬 Escena: README de 40 pasos haciendo scroll infinito. */}
+
+## 2. Instalación mínima
+
+```bash
+# TODO: comando de instalación vigente para Linux (deb/rpm/AppImage)
+```
+
+## 3. De README a workflow
+
+Antes (README):
+
+```text
+1. docker compose up -d db
+2. export DATABASE_URL=...
+3. python manage.py migrate
+4. python manage.py runserver 0.0.0.0:8000
+```
+
+Después (workflow parametrizado):
+
+```yaml
+# TODO: validar formato actual de workflows de Warp
+name: Levantar proyecto
+command: docker compose up -d db && python manage.py migrate && python manage.py runserver 0.0.0.0:{{port}}
+arguments:
+  - name: port
+    default_value: '8000'
+```
+
+{/* 🎬 Escena: ejecutar el workflow desde la command palette, cronómetro en pantalla. */}
+
+## 4. Launch configuration: tres paneles con un clic
+
+TODO: YAML de la launch configuration y captura del resultado.
+
+## 5. Errores que cometí
+
+- TODO: guardar secretos en un workflow compartido / workflows que asumen rutas absolutas.
+
+## 6. Repositorio
+
+TODO: carpeta `.warp/` de ejemplo lista para copiar.

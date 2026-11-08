@@ -1,0 +1,73 @@
+---
+title: 'Astro: how I built this blog with 0 KB of JavaScript by default'
+description: "Content collections, drafts, content pillars, two languages and islands: the blog you're reading, explained from the inside."
+pubDate: '2026-11-08' # TODO: real date
+pillar: frontend
+tags: ['my-stack-series', 'astro', 'performance', 'mdx', 'i18n']
+draft: true
+summary:
+  stack: ['Astro', 'MDX', 'TypeScript']
+  complexity: media
+  role: 'Author and sole developer'
+  impact: 'TODO: e.g. Lighthouse 100/100/100/100 · TODO KB of JS on the homepage'
+repo: 'https://github.com/oscarblanco86/blog-coderhn' # TODO: verify it is public
+---
+
+{/* DRAFT · "My stack" series · Astro — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/astro.mdx. */}
+
+## 1. Why Astro (in one sentence)
+
+TODO: a blog is content; it doesn't need a client-side UI framework to display text.
+
+## 2. The blog's architecture
+
+```text
+src/
+├── content/blog/es/     → Spanish posts (MDX)
+├── content/blog/en/     → English posts, same slug = translation
+├── content.config.ts    → Zod schema for the frontmatter
+├── i18n/ui.ts           → UI strings and localized paths
+├── lib/posts.ts         → getPosts(lang): hides drafts in production
+├── views/               → pages shared by both languages
+└── components/          → Terminal, EngineeringSummary, ThemeToggle, LangSwitch
+```
+
+## 3. Drafts that never reach production
+
+```ts
+// src/lib/posts.ts
+const isVisible = (post: Post) => import.meta.env.DEV || !post.data.draft;
+
+export async function getPosts(lang: Lang) {
+	const posts = await getCollection('blog', (p) => postLang(p) === lang && isVisible(p));
+	return posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+}
+```
+
+TODO: explain why filtering in a single place prevents leaks (RSS, sitemap, homepage).
+
+## 4. Two languages without a library
+
+TODO: Spanish at the root and English under `/en/`; pairing translations by slug; browser
+language detection that only redirects when the translated page exists; `hreflang` tags.
+
+## 5. Typed frontmatter schema
+
+TODO: show `content.config.ts` and the error Astro throws when a field is missing.
+
+## 6. Islands (when I do need JavaScript)
+
+TODO: example with `client:visible` and a table of KB shipped.
+
+## 7. Results
+
+| Metric | Value |
+| ------ | ----- |
+| Lighthouse | TODO |
+| JS on homepage | TODO |
+| Build time | TODO |
+
+## 8. Repository
+
+TODO

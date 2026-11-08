@@ -1,11 +1,14 @@
 ---
+import { LANG_META, type Lang } from '../i18n/ui';
+
 interface Props {
 	date: Date;
+	lang: Lang;
 }
 
-const { date } = Astro.props;
+const { date, lang } = Astro.props;
 ---
 
 <time datetime={date.toISOString()}>
-	{date.toLocaleDateString('es-HN', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
+	{date.toLocaleDateString(LANG_META[lang].locale, { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
 </time>

@@ -1,0 +1,70 @@
+---
+title: 'Netlify + GitHub Actions: nothing ships if it lowers performance'
+description: 'Deploying to Netlify from GitHub Actions with a Lighthouse "gatekeeper": if a PR makes performance worse, it never reaches production.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: calidad
+tags: ['my-stack-series', 'netlify', 'github-actions', 'lighthouse', 'ci-cd']
+draft: true
+summary:
+  stack: ['GitHub Actions', 'Netlify CLI', 'Lighthouse CI']
+  complexity: media
+  role: 'Author'
+  impact: 'TODO: e.g. Lighthouse ≥ 95 guaranteed on every deploy'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Netlify + GitHub Actions — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/netlify-github-actions.mdx. */}
+
+## 1. Why combine them (in one sentence)
+
+TODO: Netlify is excellent at serving; GitHub Actions is better at deciding **whether** something
+deserves to be served.
+
+## 2. Pipeline architecture
+
+```text
+PR ──▶ lint + tests ──▶ build ──▶ netlify deploy (preview) ──▶ Lighthouse CI ──▶ ✅ / ❌
+main ─▶ (same) ─────────────────▶ netlify deploy --prod
+```
+
+## 3. Preview deploy from Actions
+
+```yaml
+      - name: Deploy preview
+        run: bunx netlify-cli deploy --dir=dist --json > deploy.json # TODO: verify flags
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+```
+
+## 4. Lighthouse as gatekeeper
+
+```json
+{
+	"ci": {
+		"assert": {
+			"assertions": {
+				"categories:performance": ["error", { "minScore": 0.95 }],
+				"categories:accessibility": ["error", { "minScore": 1 }]
+			}
+		}
+	}
+}
+```
+
+## 5. Automatic PR comment
+
+TODO: post the preview URL and the Lighthouse summary as a comment.
+
+## 6. Results
+
+TODO: how many PRs it blocked, what it caught.
+
+## 7. Mistakes I made
+
+- TODO: measuring on a single run (Lighthouse varies: use several runs) / over-privileged tokens.
+
+## 8. Repository
+
+TODO

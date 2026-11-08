@@ -4,35 +4,42 @@ import type { Post } from '../lib/posts';
 import EngineeringSummary from '../components/EngineeringSummary.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import { AUTHOR, PILLARS } from '../consts';
+import { localizePath, useTranslations, type Lang } from '../i18n/ui';
 import BaseLayout from './BaseLayout.astro';
 
 interface Props {
 	data: Post['data'];
 	minutes: number;
+	lang: Lang;
+	/** URL de la traducción, o del índice del blog en el otro idioma si no existe. */
+	altHref: string;
+	altExists: boolean;
 }
 
-const { data, minutes } = Astro.props;
+const { data, minutes, lang, altHref, altExists } = Astro.props;
+const t = useTranslations(lang);
+const href = (path: string) => localizePath(path, lang);
 const { title, description, pubDate, updatedDate, heroImage, pillar, tags, draft } = data;
 const p = PILLARS[pillar];
 ---
 
-<BaseLayout title={title} description={description} image={heroImage} type="article">
+<BaseLayout title={title} description={description} image={heroImage} type="article" altHref={altHref} altExists={altExists}>
 	<article>
 		<header class="head">
 			<div class="meta mono">
-				<a href={`/pilares/${pillar}`}>{p.icon} {p.label}</a>
+				<a href={href(`/pilares/${pillar}`)}>{p.icon} {p.label[lang]}</a>
 				<span>·</span>
-				<FormattedDate date={pubDate} />
+				<FormattedDate date={pubDate} lang={lang} />
 				<span>·</span>
 				<span>{minutes} min</span>
-				{draft && <span class="draft">BORRADOR</span>}
+				{draft && <span class="draft">{t('post.draft').toUpperCase()}</span>}
 			</div>
 			<h1>{title}</h1>
 			<p class="lead">{description}</p>
 			{
 				updatedDate && (
 					<p class="updated mono">
-						actualizado: <FormattedDate date={updatedDate} />
+						{t('post.updated')}: <FormattedDate date={updatedDate} lang={lang} />
 					</p>
 				)
 			}
@@ -40,7 +47,7 @@ const p = PILLARS[pillar];
 
 		{heroImage && <Image class="hero" width={1020} height={510} src={heroImage} alt="" />}
 
-		<EngineeringSummary data={data} />
+		<EngineeringSummary data={data} lang={lang} />
 
 		<div class="prose">
 			<slot />
@@ -57,10 +64,10 @@ const p = PILLARS[pillar];
 				)
 			}
 			<p class="muted">
-				Escrito por <a href="/about">{AUTHOR.name}</a>. ¿Comentarios o propuestas? Escríbeme vía
+				{t('post.writtenBy')} <a href={href('/about')}>{AUTHOR.name}</a>. {t('post.feedback')}
 				<a href={AUTHOR.github} target="_blank" rel="noopener">GitHub</a>.
 			</p>
-			<a class="mono back" href="/blog">← cd ../blog</a>
+			<a class="mono back" href={href('/blog')}>{t('post.back')}</a>
 		</footer>
 	</article>
 </BaseLayout>

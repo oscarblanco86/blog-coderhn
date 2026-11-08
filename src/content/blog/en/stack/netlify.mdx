@@ -1,0 +1,75 @@
+---
+title: 'Netlify: headers, caching and security to score an A+ (not just "upload the dist folder")'
+description: 'How I deploy static sites on Netlify with security headers, immutable caching, redirects and deploy previews, measuring the result.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: backend
+tags: ['my-stack-series', 'netlify', 'hosting', 'security', 'performance']
+draft: true
+summary:
+  stack: ['Netlify', 'Astro', 'netlify.toml']
+  complexity: baja
+  role: 'Author'
+  impact: 'TODO: e.g. Mozilla Observatory F → A+ · TTFB TODO ms'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Netlify — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/netlify.mdx. */}
+
+## 1. Why Netlify (in one sentence)
+
+TODO: for static sites it gives me continuous deployment, per-PR previews and a CDN without
+managing servers.
+
+## 2. The minimal deployment
+
+```toml
+# netlify.toml
+[build]
+  command = "bun run build"
+  publish = "dist"
+```
+
+## 3. Security headers
+
+```toml
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Content-Security-Policy = "TODO: define based on the real scripts (Cloudflare Analytics, etc.)"
+```
+
+## 4. Caching: immutable for assets, fresh for HTML
+
+```toml
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+```
+
+TODO: explain why it works (hashed file names).
+
+## 5. Redirects and deploy previews
+
+TODO: `_redirects`, canonical domain, and how I use previews for review.
+
+## 6. Results
+
+| Metric | Before | After |
+| ------ | ------ | ----- |
+| Mozilla Observatory | TODO | TODO |
+| securityheaders.com | TODO | TODO |
+| Lighthouse Best Practices | TODO | TODO |
+
+## 7. Mistakes I made
+
+- TODO: a CSP so strict it breaks analytics / caching HTML as immutable.
+
+## 8. Repository
+
+TODO

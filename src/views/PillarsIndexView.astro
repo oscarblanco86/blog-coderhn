@@ -1,0 +1,69 @@
+---
+import { PILLARS } from '../consts';
+import { localizePath, useTranslations, type Lang } from '../i18n/ui';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPosts } from '../lib/posts';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const posts = await getPosts(lang);
+---
+
+<BaseLayout title={t('pillars.title')} description={t('pillars.description')}>
+	<h1><span class="mono prompt">$</span> tree ./{t('nav.pillars')}</h1>
+	<div class="grid">
+		{
+			Object.entries(PILLARS).map(([k, p]) => (
+				<a class="pillar" href={localizePath(`/pilares/${k}`, lang)}>
+					<span class="icon">{p.icon}</span>
+					<h2>{p.label[lang]}</h2>
+					<p class="muted">{p.description[lang]}</p>
+					<span class="mono count">
+						{posts.filter((x) => x.data.pillar === k).length} {t('pillars.articles')} →
+					</span>
+				</a>
+			))
+		}
+	</div>
+</BaseLayout>
+<style>
+	.prompt {
+		color: var(--accent);
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 1em;
+	}
+	.pillar {
+		display: block;
+		padding: 1.25em;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		background: var(--bg-soft);
+		text-decoration: none;
+		color: var(--text);
+		transition: border-color 0.15s;
+	}
+	.pillar:hover {
+		border-color: var(--accent);
+		color: var(--text);
+	}
+	.icon {
+		font-size: 1.5em;
+	}
+	h2 {
+		font-size: 1.1em;
+		margin: 0.4em 0;
+	}
+	p {
+		font-size: 0.88em;
+	}
+	.count {
+		font-size: 0.75em;
+		color: var(--accent);
+	}
+</style>

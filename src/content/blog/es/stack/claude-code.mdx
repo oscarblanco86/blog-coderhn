@@ -1,0 +1,101 @@
+---
+title: 'Claude Code en un proyecto real: cómo lo uso sin perder el control de la calidad'
+description: 'CLAUDE.md, modo plan, permisos, hooks y revisión de código: mi flujo para trabajar con un agente de IA y seguir siendo responsable de cada línea.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: calidad
+tags: ['serie-mi-stack', 'claude', 'claude-code', 'ia', 'productividad']
+draft: true
+summary:
+  stack: ['Claude Code', 'Git', 'TODO']
+  complexity: media
+  role: 'Autor'
+  impact: 'TODO: ej. 14 borradores de esta serie generados y revisados en 1 sesión'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Claude Code
+(Verificar comandos y nombres de features con la versión vigente:
+/init, plan mode, permisos, hooks, subagentes, /code-review.)
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Esta serie la empecé con Claude Code" (meta)
+   Contar cómo se generaron los borradores de esta misma serie: el
+   prompt, qué revisó el agente del repo (esquema, draft, getPosts),
+   qué corregí yo a mano y por qué. Honesto: lo que hizo bien y mal.
+   🎬 Video (8–10 min): grabación de pantalla de una sesión real
+   acelerada; pausas para comentar decisiones. Gancho: "le pedí 14
+   posts a una IA; esto es lo que tuve que corregir".
+
+B) DEMOSTRAR HABILIDAD — "IA + calidad (ISO 9000) no son enemigos"
+   CLAUDE.md con estándares del proyecto, hooks que corren lint y tests
+   tras cada edición, permisos restrictivos, revisión de diff antes de
+   commit. Encaja con el pilar de Calidad del blog.
+   🎬 Video (8–10 min): el agente introduce un bug → el hook de tests
+   lo detecta solo → el agente lo corrige. Diagrama del "circuito de
+   control" en pantalla.
+
+C) ÚTIL PARA EL USUARIO — "Tus primeros 30 minutos con Claude Code"
+   Instalación, /init, cómo escribir buenos pedidos, modo plan, cuándo
+   NO usarlo, costos, chuleta de comandos descargable.
+   🎬 Video (6–8 min) + shorts con un tip cada uno.
+
+Recomendada: B en el post (fuerte para portafolio) con A como intro.
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Claude Code (en una frase)
+
+TODO: un agente que lee el repo, ejecuta comandos y edita archivos; útil solo si le das contexto
+y límites claros.
+
+{/* 🎬 Escena: abrir la terminal en este mismo repo y mostrar el prompt que creó esta serie. */}
+
+## 2. Contexto: CLAUDE.md
+
+```markdown
+# CLAUDE.md
+- Stack: TODO
+- Comandos: `bun run dev`, `bun run build`
+- Reglas: todo post nuevo lleva `draft: true`; no tocar `src/consts.ts` sin preguntar.
+```
+
+TODO: qué poner y qué no (no duplicar lo que ya está en el código).
+
+## 3. Pensar antes de escribir: modo plan
+
+TODO: ejemplo de un plan aprobado vs. uno rechazado.
+
+## 4. Límites: permisos
+
+TODO: qué comandos permito siempre, cuáles pido confirmar, cuáles nunca.
+
+## 5. Control de calidad automático: hooks
+
+```json
+{
+	"hooks": {
+		"PostToolUse": [
+			{ "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "TODO: bun run lint" }] }
+		]
+	}
+}
+```
+
+TODO: verificar formato actual en la documentación.
+
+{/* 🎬 Escena: el hook detecta el bug introducido y el agente lo corrige. */}
+
+## 6. Revisión: yo sigo siendo el responsable
+
+TODO: cómo reviso el diff, cuándo pido `/code-review`, cuándo descarto todo y empiezo de nuevo.
+
+## 7. Errores que cometí
+
+- TODO: pedidos vagos / aceptar cambios sin leer el diff / sesiones demasiado largas.
+
+## 8. Repositorio
+
+TODO: CLAUDE.md y settings de ejemplo.

@@ -1,0 +1,90 @@
+---
+title: 'Notion como CMS de mi blog: de una idea en el teléfono a un borrador MDX en el repo'
+description: 'Mi calendario editorial (posts y videos) vive en Notion; un script con la API de Notion lo convierte en borradores listos para escribir.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: calidad
+tags: ['serie-mi-stack', 'notion', 'productividad', 'automatizacion', 'nodejs']
+draft: true
+summary:
+  stack: ['Notion API', 'Node.js', 'GitHub Actions']
+  complexity: media
+  role: 'Autor'
+  impact: 'TODO: ej. idea → borrador en el repo en < 1 min, sin copiar y pegar'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Notion
+(Verificar versión vigente de la API de Notion y del SDK @notionhq/client.)
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "El calendario editorial de esta serie"
+   Base de datos de Notion con estados (idea → guion → grabado →
+   editado → publicado), relación post ↔ video, idioma, pilar. Mostrar
+   la plantilla real que usas para esta serie; descargable.
+   🎬 Video (5–6 min): recorrido por tu tablero real; vista calendario,
+   vista kanban; cómo planeas una semana de contenido.
+
+B) DEMOSTRAR HABILIDAD — "De Notion a MDX automáticamente"
+   Script Node con la API de Notion: lee las filas con estado "listo
+   para escribir" y genera `src/content/blog/es/<slug>.mdx` con el
+   frontmatter correcto y `draft: true`; GitHub Action programada que
+   abre un PR con los borradores nuevos.
+   🎬 Video (8–10 min): gancho — escribir una idea en Notion desde el
+   teléfono → minutos después aparece un PR en GitHub con el borrador.
+
+C) ÚTIL PARA EL USUARIO — "Notion para documentar calidad (ISO 9000)"
+   Plantillas para equipos de desarrollo: procedimientos, registro de
+   incidentes, ADRs (decisiones de arquitectura), checklist de release.
+   🎬 Video (6 min) recorriendo cada plantilla con un caso real.
+
+Recomendada: B (técnico y original), usando A como contexto.
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Notion (en una frase)
+
+TODO: capturo ideas en cualquier lugar y las organizo sin fricción; el código decide cuándo se
+convierten en trabajo real.
+
+{/* 🎬 Escena: escribir una idea en Notion desde el teléfono. */}
+
+## 2. La base de datos editorial
+
+| Propiedad | Tipo | Uso |
+| --------- | ---- | --- |
+| Título | title | TODO |
+| Estado | status | idea · guion · grabado · publicado |
+| Pilar | select | backend · frontend · calidad · opensource |
+| Idioma | multi-select | es · en |
+| Slug | text | nombre del archivo |
+| Video | url | TODO |
+
+## 3. El script: Notion → MDX
+
+```ts
+// scripts/notion-to-mdx.ts — TODO: validar contra la API vigente
+import { Client } from '@notionhq/client';
+import { writeFile, access } from 'node:fs/promises';
+
+const notion = new Client({ auth: process.env.NOTION_TOKEN });
+
+// TODO: consultar la base de datos filtrando por Estado = "listo para escribir"
+// TODO: por cada fila, si el archivo no existe, escribir el frontmatter con draft: true
+```
+
+{/* 🎬 Escena: ejecutar el script y ver los archivos nuevos en el editor. */}
+
+## 4. Automatizarlo con GitHub Actions
+
+TODO: workflow programado que corre el script y abre un PR.
+
+## 5. Errores que cometí
+
+- TODO: token de integración con acceso a todo el workspace / sobrescribir un borrador ya escrito.
+
+## 6. Repositorio y plantilla
+
+TODO: enlace a la plantilla pública de Notion y al script.

@@ -3,31 +3,81 @@ import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
 import { Font } from 'astro:assets';
 import { AUTHOR, CF_ANALYTICS_TOKEN, SITE_TITLE } from '../consts';
+import { LANG_META, localizePath, otherLang, type Lang } from '../i18n/ui';
+import { SHOW_DRAFTS } from '../lib/posts';
 
 interface Props {
 	title: string;
 	description: string;
 	image?: ImageMetadata;
 	type?: 'website' | 'article';
+	lang: Lang;
+	/** URL de esta página en el otro idioma. */
+	altHref: string;
+	/** true si altHref es una traducción real de esta página (y no un índice de reemplazo). */
+	altExists: boolean;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const { title, description, image, type = 'website' } = Astro.props;
+const { title, description, image, type = 'website', lang, altHref, altExists } = Astro.props;
+const alt = otherLang(lang);
 const fullTitle = title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`;
+const rssHref = new URL(localizePath('/rss.xml', lang), Astro.site);
+// Solo redirigimos automáticamente si existe la misma página en el otro idioma.
+const autoRedirect = altExists ? altHref : '';
 ---
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<!-- Tema: se aplica antes del primer pintado para evitar parpadeo. -->
+<script is:inline>
+	try {
+		var t = localStorage.getItem('theme');
+		if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+	} catch (e) {}
+</script>
+
+<!--
+	Idioma: si el visitante nunca eligió uno manualmente, usamos el idioma del navegador
+	(español → es, cualquier otro → en). No se aplica a bots para no afectar la indexación.
+-->
+<script is:inline define:vars={{ pageLang: lang, autoRedirect }}>
+	try {
+		var bot = navigator.webdriver || /bot|crawl|spider|slurp|lighthouse|preview|headless/i.test(navigator.userAgent);
+		if (autoRedirect && !bot && !localStorage.getItem('lang')) {
+			var nav = (navigator.languages && navigator.languages[0]) || navigator.language || '';
+			var wanted = /^es\b/i.test(nav) ? 'es' : 'en';
+			if (wanted !== pageLang) location.replace(autoRedirect);
+		}
+	} catch (e) {}
+</script>
+
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" href="/favicon.ico" />
 <link rel="sitemap" href="/sitemap-index.xml" />
-<link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={new URL('rss.xml', Astro.site)} />
+<link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={rssHref} />
 <meta name="generator" content={Astro.generator} />
 <meta name="author" content={AUTHOR.name} />
+<!-- Vista previa con borradores: que ningún buscador la indexe. -->
+{SHOW_DRAFTS && <meta name="robots" content="noindex, nofollow" />}
 
 <Font cssVariable="--font-atkinson" preload />
 
 <link rel="canonical" href={canonicalURL} />
+{
+	altExists && (
+		<>
+			<link rel="alternate" hreflang={lang} href={canonicalURL} />
+			<link rel="alternate" hreflang={alt} href={new URL(altHref, Astro.site)} />
+			<link
+				rel="alternate"
+				hreflang="x-default"
+				href={new URL(lang === 'es' ? Astro.url.pathname : altHref, Astro.site)}
+			/>
+		</>
+	)
+}
 
 <title>{fullTitle}</title>
 <meta name="title" content={fullTitle} />
@@ -37,7 +87,8 @@ const fullTitle = title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`;
 <meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
-<meta property="og:locale" content="es_ES" />
+<meta property="og:locale" content={LANG_META[lang].og} />
+{altExists && <meta property="og:locale:alternate" content={LANG_META[alt].og} />}
 {image && <meta property="og:image" content={new URL(image.src, Astro.url)} />}
 
 <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
@@ -46,7 +97,7 @@ const fullTitle = title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`;
 {image && <meta name="twitter:image" content={new URL(image.src, Astro.url)} />}
 
 {
-	import.meta.env.PROD && CF_ANALYTICS_TOKEN && (
+	import.meta.env.PROD && !SHOW_DRAFTS && CF_ANALYTICS_TOKEN && (
 		<script
 			is:inline
 			defer

@@ -1,0 +1,69 @@
+---
+title: "Modern Angular: signals, standalone and control flow (it's not the Angular you remember)"
+description: 'I refactor a classic-style Angular component to modern Angular and measure what changes in code, performance and readability.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: frontend
+tags: ['my-stack-series', 'angular', 'signals', 'typescript']
+draft: true
+summary:
+  stack: ['Angular', 'TypeScript', 'Signals']
+  complexity: media
+  role: 'Author'
+  impact: 'TODO: e.g. −40 % lines · no Zone.js · bundle −TODO KB'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Angular — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/angular.mdx. */}
+
+## 1. Why Angular (in one sentence)
+
+TODO: for large enterprise applications, strong opinions (DI, router, forms, CLI) reduce the
+number of decisions a team has to argue about.
+
+## 2. The "classic" component
+
+```ts
+// TODO: component with NgModule, @Input, *ngFor and manual subscribe
+```
+
+## 3. The same component, modern
+
+```ts
+import { Component, computed, input, signal } from '@angular/core';
+
+@Component({
+	selector: 'app-athletes',
+	template: `
+		<input (input)="query.set($any($event.target).value)" placeholder="Search" />
+		@for (a of filtered(); track a.id) {
+			<p>{{ a.name }}</p>
+		} @empty {
+			<p>No results</p>
+		}
+	`,
+})
+export class AthletesComponent {
+	athletes = input.required<{ id: number; name: string }[]>();
+	query = signal('');
+	filtered = computed(() =>
+		this.athletes().filter((a) => a.name.toLowerCase().includes(this.query().toLowerCase())),
+	);
+}
+```
+
+## 4. What do we gain?
+
+| Metric | Classic | Modern |
+| ------ | ------- | ------ |
+| Lines | TODO | TODO |
+| Bundle | TODO | TODO |
+| Change detection | Zone.js | Signals (TODO: zoneless) |
+
+## 5. Mistakes I made
+
+- TODO: mixing signals and observables without `toSignal` / effects that write to other signals.
+
+## 6. Repository
+
+TODO

@@ -1,0 +1,105 @@
+---
+title: 'Vue 3: una calculadora de ritmos para corredores (y cómo funciona la reactividad por dentro)'
+description: 'Composition API, composables y el sistema de reactividad de Vue explicado construyendo una herramienta real con el paquete run-science.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: frontend
+tags: ['serie-mi-stack', 'vue', 'composition-api', 'typescript']
+draft: true
+summary:
+  stack: ['Vue 3', 'TypeScript', 'Vite', 'run-science']
+  complexity: media
+  role: 'Autor'
+  impact: 'TODO: ej. calculadora usable en el teléfono · TODO KB de JS'
+repo: 'https://github.com/oscarblanco86/TODO'
+demo: 'https://TODO.example.com'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Vue
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Calculadora de ritmos con run-science"
+   Introduces una marca (ej. 10K en 45:00) → VDOT → ritmos de
+   entrenamiento (fácil, umbral, intervalos) y zonas de FC. Usa el
+   paquete JS de run-science: la serie se conecta.
+   🎬 Video (8 min): usarla en el teléfono antes de salir a correr;
+   luego construirla. Gancho: "la app que uso antes de cada
+   entrenamiento la hice en 150 líneas".
+
+B) DEMOSTRAR HABILIDAD — "La reactividad de Vue en 50 líneas"
+   Implementar un mini ref/computed/effect con Proxy para entender qué
+   hace Vue por dentro; comparar con los hooks de React (re-render vs.
+   dependencias rastreadas).
+   🎬 Video (8–10 min): pizarra con el grafo de dependencias que se
+   ilumina al cambiar un valor.
+
+C) ÚTIL PARA EL USUARIO — "Una isla Vue dentro de Astro"
+   Agregar un componente Vue interactivo a un sitio Astro (como este
+   blog) con client:visible; cuánto JS cuesta.
+   🎬 Video (5 min) — conecta con el post de Astro.
+
+Recomendada: A con una sección corta de B ("¿por qué se actualiza solo?").
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Vue (en una frase)
+
+TODO: plantillas que parecen HTML, reactividad fina sin pensar en re-renders, y una curva de
+aprendizaje amable.
+
+{/* 🎬 Escena: usar la calculadora en el teléfono antes de correr. */}
+
+## 2. Crear el proyecto
+
+```bash
+bun create vue@latest ritmos
+cd ritmos
+bun add run-science   # TODO: nombre real del paquete
+```
+
+## 3. El composable
+
+```ts
+// src/composables/useTrainingPaces.ts
+import { computed, ref } from 'vue';
+// import { vdot, trainingPaces } from 'run-science'; // TODO
+
+export function useTrainingPaces() {
+	const distanceM = ref(10_000);
+	const timeS = ref(45 * 60);
+	const score = computed(() => 0 /* TODO: vdot(distanceM.value, timeS.value) */);
+	const paces = computed(() => [] /* TODO: trainingPaces(score.value) */);
+	return { distanceM, timeS, score, paces };
+}
+```
+
+## 4. El componente
+
+```vue
+<script setup lang="ts">
+import { useTrainingPaces } from './composables/useTrainingPaces';
+const { distanceM, timeS, score } = useTrainingPaces();
+</script>
+
+<template>
+	<label>Distancia (m) <input v-model.number="distanceM" type="number" /></label>
+	<label>Tiempo (s) <input v-model.number="timeS" type="number" /></label>
+	<p>VDOT: {{ score.toFixed(1) }}</p>
+</template>
+```
+
+## 5. ¿Por qué se actualiza solo? (reactividad en 20 líneas)
+
+TODO: mini implementación con Proxy y el grafo de dependencias.
+
+{/* 🎬 Escena: grafo de dependencias que se ilumina al cambiar el tiempo. */}
+
+## 6. Errores que cometí
+
+- TODO: desestructurar un `reactive()` y perder la reactividad / olvidar `.value` en el script.
+
+## 7. Repositorio y demo
+
+TODO

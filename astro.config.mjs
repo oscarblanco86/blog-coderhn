@@ -7,7 +7,11 @@ import { defineConfig, fontProviders } from 'astro/config';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://blog.coderhn.dev',
-	integrations: [mdx(), sitemap()],
+	integrations: [
+		mdx(),
+		// Español en la raíz, inglés bajo /en/ (ver src/i18n/ui.ts).
+		sitemap({ i18n: { defaultLocale: 'es', locales: { es: 'es-HN', en: 'en-US' } } }),
+	],
 	fonts: [
 		{
 			provider: fontProviders.local(),

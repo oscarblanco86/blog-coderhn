@@ -3,28 +3,36 @@ import type { ImageMetadata } from 'astro';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import { getLangFromUrl, localizePath, otherLang } from '../i18n/ui';
 
 interface Props {
 	title: string;
 	description: string;
 	image?: ImageMetadata;
 	type?: 'website' | 'article';
+	/**
+	 * URL de esta página en el otro idioma. Por defecto se asume que existe la misma ruta con/sin
+	 * el prefijo /en. Los posts sin traducción pasan el índice del blog y `altExists: false`.
+	 */
+	altHref?: string;
+	altExists?: boolean;
 }
 
-const props = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const { altHref = localizePath(Astro.url.pathname, otherLang(lang)), altExists = true, ...props } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
 	<head>
-		<BaseHead {...props} />
+		<BaseHead {...props} lang={lang} altHref={altHref} altExists={altExists} />
 		<slot name="head" />
 	</head>
 	<body>
-		<Header />
+		<Header lang={lang} altHref={altHref} />
 		<main>
 			<slot />
 		</main>
-		<Footer />
+		<Footer lang={lang} />
 	</body>
 </html>

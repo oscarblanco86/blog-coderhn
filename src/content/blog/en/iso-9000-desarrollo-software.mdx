@@ -1,0 +1,86 @@
+---
+title: 'ISO 9000 in software development: quality without bureaucracy'
+description: "How to turn ISO 9001's principles and clauses into practices a software team already knows: PRs, CI, ADRs and postmortems."
+pubDate: '2026-11-08' # TODO: real date
+pillar: calidad
+tags: ['iso-9000', 'iso-9001', 'quality', 'process', 'devops']
+draft: true
+summary:
+  stack: ['ISO 9001:2015', 'ISO/IEC 90003', 'GitHub', 'CI/CD']
+  complexity: media
+  role: 'Author'
+  impact: 'TODO: e.g. every relevant ISO 9001 clause mapped to a practice with automatic evidence in the repo'
+---
+
+{/*
+DRAFT · English translation of es/iso-9000-desarrollo-software.mdx.
+Write the Spanish version first, then translate. Keep `draft: true` until both are ready.
+*/}
+
+## 1. The problem
+
+TODO: A real story. E.g. the same bug reached production three times because nobody wrote
+down the root cause; or a client audit asked for "evidence of change control" and there was
+nowhere to look.
+
+The core idea: **ISO 9000 isn't paperwork; it asks that what you already do well be
+repeatable and provable.**
+
+## 2. ISO 9000, 9001 and 90003: what each one is
+
+- **ISO 9000**: quality management fundamentals and vocabulary. Defines the 7 principles.
+- **ISO 9001**: requirements for a quality management system. The one you get certified on.
+- **ISO/IEC 90003**: guidelines for applying ISO 9001 to software. TODO: confirm current version.
+
+## 3. The 7 principles, translated to a development team
+
+| Principle | In a software team |
+| --- | --- |
+| Customer focus | Acceptance criteria written with the user; real usage metrics |
+| Leadership | A shared definition of "done" the team stands behind |
+| Engagement of people | Code reviews as learning, not policing |
+| Process approach | One flow: issue → branch → PR → CI → deploy |
+| Improvement | Retrospectives whose action items get closed |
+| Evidence-based decisions | DORA metrics, coverage, production errors |
+| Relationship management | Clear agreements with vendors and dependencies (SLAs, pinned versions) |
+
+## 4. ISO 9001 clauses → practices → evidence
+
+| Clause | What it asks | Practice | Evidence produced automatically |
+| --- | --- | --- | --- |
+| 6.1 Risks and opportunities | Think about what can fail | Risk review during design | "Risks" section in the ADR |
+| 7.5 Documented information | Controlled, versioned documents | ADRs and README in the repo | Git history |
+| 8.3 Design and development | Plan, review, verify, validate | PRs with required review and tests | Approved PRs + CI checks |
+| 8.5.6 Control of changes | Reviewed, traceable changes | Protected branches, commits linked to issues | Merge log |
+| 8.7 Nonconforming outputs | Defects don't reach the customer | Feature flags, `draft: true`, rollback | Deploys blocked by CI |
+| 9.1 Monitoring and measurement | Measure performance | DORA metrics | Dashboard |
+| 9.2 Internal audit | Check the system works | TODO: light quarterly audit | Report in the repo |
+| 10.2 Nonconformity and corrective action | Root cause and fix | Blameless postmortems | Labeled issue + regression test |
+
+TODO: verify the numbering against the official ISO 9001:2015 text.
+
+## 5. Key code: evidence as code
+
+```markdown
+<!-- .github/pull_request_template.md -->
+## What changes and why
+<!-- link to the issue (traceability, 8.5.6) -->
+
+## Verification (8.3)
+- [ ] New or updated tests
+- [ ] Checked on the deploy preview
+
+## Risks (6.1)
+<!-- what could break and how to roll it back -->
+```
+
+TODO: add the postmortem and ADR templates.
+
+## 6. Results and lessons learned
+
+| Metric | Before | After |
+| ------ | ------ | ----- |
+| TODO: repeated bugs per quarter | … | … |
+| TODO: time to gather audit evidence | … | … |
+
+TODO: what didn't work (e.g. over-documenting) and what you'd do differently.

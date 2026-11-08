@@ -1,0 +1,68 @@
+---
+title: "React beyond the to-do app: an interval timer that doesn't drift"
+description: 'Hooks, useReducer and correct time handling by building a real tool for running workouts.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: frontend
+tags: ['my-stack-series', 'react', 'hooks', 'typescript']
+draft: true
+summary:
+  stack: ['React', 'TypeScript', 'Vite', 'Vitest']
+  complexity: media
+  coverage: 'TODO (Vitest + Testing Library)'
+  role: 'Author'
+  impact: 'TODO: e.g. drift < 50 ms after 30 min vs. 4 s with a naive setInterval'
+repo: 'https://github.com/oscarblanco86/TODO'
+demo: 'https://TODO.example.com'
+---
+
+{/* DRAFT · "My stack" series · React — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/react.mdx. */}
+
+## 1. Why React (in one sentence)
+
+TODO: the ecosystem and the "UI = f(state)" mental model let me build complex interfaces that
+stay easy to reason about.
+
+## 2. State as a state machine
+
+```ts
+type Phase = 'idle' | 'work' | 'rest' | 'done';
+
+type State = {
+	phase: Phase;
+	rep: number;
+	phaseStartedAt: number | null; // a timestamp, not a tick counter
+};
+
+type Action = { type: 'start'; now: number } | { type: 'tick'; now: number } | { type: 'reset' };
+
+function reducer(state: State, action: Action): State {
+	// TODO
+	return state;
+}
+```
+
+## 3. Why setInterval drifts
+
+TODO: explain that the interval isn't guaranteed (background tab, busy thread) and that the
+remaining time must be computed as `duration − (now − start)`.
+
+## 4. The custom hook
+
+```ts
+export function useIntervalTimer(plan: { reps: number; workMs: number; restMs: number }) {
+	// TODO: useReducer + requestAnimationFrame / setTimeout recomputing with Date.now()
+}
+```
+
+## 5. Tests
+
+TODO: test with `vi.useFakeTimers()`.
+
+## 6. Mistakes I made
+
+- TODO: storing remaining seconds in state and decrementing them / forgetting to clean up the effect.
+
+## 7. Repository and demo
+
+TODO

@@ -1,0 +1,102 @@
+---
+title: 'Netlify + GitHub Actions: no se despliega nada que baje el rendimiento'
+description: 'Desplegar a Netlify desde GitHub Actions con un "portero" de Lighthouse: si un PR empeora el rendimiento, no llega a producción.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: calidad
+tags: ['serie-mi-stack', 'netlify', 'github-actions', 'lighthouse', 'ci-cd']
+draft: true
+summary:
+  stack: ['GitHub Actions', 'Netlify CLI', 'Lighthouse CI']
+  complexity: media
+  role: 'Autor'
+  impact: 'TODO: ej. Lighthouse ≥ 95 garantizado en cada deploy'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Netlify + GitHub Actions
+(Verificar flags actuales de `netlify deploy` y de Lighthouse CI.)
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Los tests mandan, no el push"
+   Desactivar los builds automáticos de Netlify y desplegar desde
+   Actions solo si pasan lint/tests; la URL de preview se comenta sola
+   en el PR.
+   🎬 Video (6 min): PR con un test roto → no hay deploy; se arregla →
+   aparece el comentario con la URL.
+
+B) DEMOSTRAR HABILIDAD — "Portero de Lighthouse"
+   Deploy de preview → Lighthouse CI corre contra esa URL → si
+   performance < 95 o accesibilidad < 100, el PR falla. Presupuestos
+   de tamaño (JS, CSS, imágenes).
+   🎬 Video (8 min): gancho — agrego una imagen de 4 MB "inocente" al
+   PR y el pipeline la rechaza con el reporte. Mostrar el reporte de
+   Lighthouse adjunto al PR.
+
+C) ÚTIL PARA EL USUARIO — "Ahorra minutos de build de Netlify"
+   Construir en Actions (minutos gratis) y subir solo dist/ con
+   netlify-cli; comparar consumo mensual.
+   🎬 Short (60 s): gráfico de minutos de build antes/después.
+
+Recomendada: B (diferenciador fuerte y conecta con el pilar de calidad).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué combinarlos (en una frase)
+
+TODO: Netlify es excelente sirviendo; GitHub Actions es mejor decidiendo **si** algo merece
+servirse.
+
+{/* 🎬 Escena: PR con imagen de 4 MB rechazado por el pipeline. */}
+
+## 2. Arquitectura del pipeline
+
+```text
+PR ──▶ lint + tests ──▶ build ──▶ netlify deploy (preview) ──▶ Lighthouse CI ──▶ ✅ / ❌
+main ─▶ (lo mismo) ─────────────▶ netlify deploy --prod
+```
+
+## 3. Deploy de preview desde Actions
+
+```yaml
+      - name: Deploy preview
+        run: bunx netlify-cli deploy --dir=dist --json > deploy.json # TODO: verificar flags
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+```
+
+## 4. Lighthouse como portero
+
+```json
+{
+	"ci": {
+		"assert": {
+			"assertions": {
+				"categories:performance": ["error", { "minScore": 0.95 }],
+				"categories:accessibility": ["error", { "minScore": 1 }]
+			}
+		}
+	}
+}
+```
+
+{/* 🎬 Escena: reporte de Lighthouse adjunto al PR con la métrica en rojo. */}
+
+## 5. Comentario automático en el PR
+
+TODO: publicar la URL de preview y el resumen de Lighthouse como comentario.
+
+## 6. Resultados
+
+TODO: cuántos PRs bloqueó, qué detectó.
+
+## 7. Errores que cometí
+
+- TODO: medir en un solo intento (Lighthouse varía: usar varias corridas) / tokens con demasiados permisos.
+
+## 8. Repositorio
+
+TODO

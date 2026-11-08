@@ -1,0 +1,77 @@
+---
+title: 'Flask: turning a Python script into an API in 20 lines'
+description: 'When I pick Flask over Django, and how to expose any Python script or library as a web service.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: backend
+tags: ['my-stack-series', 'python', 'flask', 'api']
+draft: true
+summary:
+  stack: ['Python', 'Flask', 'pytest']
+  complexity: baja
+  coverage: 'TODO (pytest)'
+  role: 'Author'
+  impact: 'TODO: e.g. VDOT calculator available as a public API'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Python + Flask — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/python-flask.mdx. */}
+
+## 1. Why Flask (in one sentence)
+
+TODO: when the problem is small and well defined, Flask lets me write only what's necessary.
+
+## 2. Flask or Django?
+
+| Criterion | Flask | Django |
+| --------- | ----- | ------ |
+| Small, single-responsibility service | ✅ | — |
+| Admin, auth and ORM included | — | ✅ |
+| TODO | | |
+
+## 3. The original script
+
+```python
+# vdot.py — TODO: replace with the real run-science function
+def vdot(distance_m: float, time_s: float) -> float:
+    ...
+```
+
+## 4. The API in 20 lines
+
+```python
+# app.py
+from flask import Flask, jsonify, request
+from vdot import vdot
+
+app = Flask(__name__)
+
+@app.get("/vdot")
+def calc_vdot():
+    try:
+        distance = float(request.args["distance_m"])
+        time = float(request.args["time_s"])
+    except (KeyError, ValueError):
+        return jsonify(error="distance_m and time_s are required and must be numeric"), 400
+    return jsonify(vdot=round(vdot(distance, time), 1))
+```
+
+```bash
+flask --app app run --debug
+curl "http://127.0.0.1:5000/vdot?distance_m=10000&time_s=2700"
+```
+
+## 5. Test
+
+```python
+def test_vdot_requires_params(client):
+    assert client.get("/vdot").status_code == 400
+```
+
+## 6. Mistakes I made
+
+- TODO: using the development server in production (use gunicorn) / not validating input.
+
+## 7. Repository
+
+TODO

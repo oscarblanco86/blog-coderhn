@@ -1,0 +1,116 @@
+---
+title: 'Linux para desarrolladores: diagnosticar un servidor lento en 5 minutos'
+description: 'Los comandos de Linux que de verdad uso, aprendidos resolviendo incidentes reales y no memorizando listas.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: backend
+tags: ['serie-mi-stack', 'linux', 'devops', 'bash']
+draft: true
+summary:
+  stack: ['Linux', 'Bash', 'systemd']
+  complexity: baja
+  role: 'Autor'
+  impact: 'TODO: ej. de "el servidor está lento" a causa raíz en < 5 min'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Linux
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "El servidor está lento: diagnóstico en 5 min"
+   En vez de listar comandos, se aprende resolviendo un incidente
+   simulado en un VPS: disco lleno (df, du), proceso que consume CPU
+   (htop, ps), puerto ocupado (ss, lsof), logs (journalctl, tail -f).
+   🎬 Video (6–8 min): gancho "Son las 3 am y el servidor no responde".
+   Pantalla dividida: terminal + checklist que se va marcando.
+   Romper el servidor a propósito al inicio (script `romper.sh`) para
+   que el espectador pueda reproducirlo. Cierre: chuleta en pantalla.
+
+B) DEMOSTRAR HABILIDAD — "VPS recién creado → seguro en 10 min"
+   Script bash idempotente de hardening: usuario no root, llaves SSH,
+   ufw, fail2ban, actualizaciones automáticas. Con tests (bats).
+   🎬 Video (8–10 min): mostrar /var/log/auth.log ANTES con cientos de
+   intentos de login de bots → ejecutar script → DESPUÉS en silencio.
+   Ese contraste visual es el gancho.
+
+C) ÚTIL PARA EL USUARIO — "Linux para devs que vienen de Windows"
+   Tabla de equivalencias (Explorador → ls/cd, Administrador de tareas
+   → htop…), permisos explicados con analogía, PDF descargable.
+   🎬 Serie de shorts verticales (30–45 s): "un comando al día",
+   cada short = problema cotidiano + comando que lo resuelve.
+
+Recomendada: A (enseña Linux con contexto y luce criterio de DevOps).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Linux (en una frase)
+
+TODO: Casi todo lo que despliego termina en un servidor Linux; entenderlo es la diferencia entre
+"reiniciar y rezar" y encontrar la causa raíz.
+
+{/* 🎬 Escena: gancho del incidente, mostrar el sitio caído en el navegador. */}
+
+## 2. Preparar el laboratorio
+
+```bash
+# VPS barato o VM local con Multipass
+multipass launch --name lab 24.04
+multipass shell lab
+# Script que rompe el servidor a propósito (incluido en el repo)
+curl -fsSL TODO/romper.sh | bash
+```
+
+{/* 🎬 Escena: ejecutar romper.sh sin explicar qué hace — el misterio engancha. */}
+
+## 3. El diagnóstico, paso a paso
+
+### 3.1 ¿Está vivo? Carga y memoria
+
+```bash
+uptime          # load average
+free -h         # memoria
+htop            # quién consume
+```
+
+### 3.2 ¿Hay disco?
+
+```bash
+df -h
+sudo du -xh / --max-depth=2 | sort -h | tail -20
+```
+
+### 3.3 ¿Qué dicen los logs?
+
+```bash
+journalctl -u nginx --since "10 min ago"
+sudo tail -f /var/log/syslog
+```
+
+### 3.4 ¿Quién ocupa el puerto?
+
+```bash
+sudo ss -tulpn | grep :80
+```
+
+TODO: explicar cada hallazgo y cómo se relaciona con el síntoma.
+
+{/* 🎬 Escena: checklist en pantalla que se marca con cada paso. */}
+
+## 4. Errores que cometí
+
+- TODO: `rm -rf` en el directorio equivocado / logs sin rotación / chmod 777 "para que funcione".
+
+## 5. Chuleta
+
+| Síntoma | Comando |
+| ------- | ------- |
+| Lento | `uptime`, `htop` |
+| Disco lleno | `df -h`, `du` |
+| No arranca un servicio | `systemctl status`, `journalctl -u` |
+| Puerto ocupado | `ss -tulpn` |
+
+## 6. Repositorio
+
+TODO: repo con `romper.sh`, `arreglar.sh` y la chuleta en PDF.

@@ -1,0 +1,78 @@
+---
+title: 'Node.js without dependencies: what the platform already ships and almost nobody uses'
+description: 'HTTP server, tests, watch mode, environment variables and TypeScript using only modern Node.js, without installing a single package.'
+pubDate: '2026-11-08' # TODO: real date
+pillar: backend
+tags: ['my-stack-series', 'nodejs', 'javascript', 'backend']
+draft: true
+summary:
+  stack: ['Node.js 22+']
+  complexity: media
+  coverage: 'TODO (node:test)'
+  role: 'Author'
+  impact: 'TODO: e.g. full API with 0 dependencies and an empty node_modules'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/* DRAFT · "My stack" series · Node.js — English translation.
+    Author notes (3 proposals + video ideas) live in es/stack/nodejs.mdx. */}
+
+## 1. Why Node.js (in one sentence)
+
+TODO: the same language for frontend, backend and tooling; and today the platform ships things
+we used to install five packages for.
+
+## 2. What you used to install and no longer need
+
+| Before | Now (built-in) |
+| ------ | -------------- |
+| nodemon | `node --watch` |
+| dotenv | `node --env-file=.env` |
+| jest / mocha | `node:test` |
+| yargs / commander | `util.parseArgs` |
+| ts-node | Native TypeScript (TODO: verify version) |
+
+## 3. An API with zero dependencies
+
+```ts
+// server.ts
+import { createServer } from 'node:http';
+
+const server = createServer((req, res) => {
+	if (req.url === '/health') {
+		res.writeHead(200, { 'content-type': 'application/json' });
+		return res.end(JSON.stringify({ ok: true }));
+	}
+	res.writeHead(404).end();
+});
+
+server.listen(Number(process.env.PORT ?? 3000));
+```
+
+```ts
+// server.test.ts
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+
+test('GET /health returns ok', async () => {
+	// TODO
+	assert.ok(true);
+});
+```
+
+```bash
+node --watch --env-file=.env server.ts
+node --test
+```
+
+## 4. When you SHOULD install a library
+
+TODO: my own criteria (schema validation, ORM, auth…).
+
+## 5. Mistakes I made
+
+- TODO
+
+## 6. Repository
+
+TODO

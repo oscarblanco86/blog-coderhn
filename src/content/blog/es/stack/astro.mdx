@@ -1,0 +1,105 @@
+---
+title: 'Astro: cómo construí este blog con 0 KB de JavaScript por defecto'
+description: 'Content collections, borradores, pilares de contenido, dos idiomas e islas: el blog que estás leyendo, explicado desde dentro.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: frontend
+tags: ['serie-mi-stack', 'astro', 'performance', 'mdx', 'i18n']
+draft: true
+summary:
+  stack: ['Astro', 'MDX', 'TypeScript']
+  complexity: media
+  role: 'Autor y único desarrollador'
+  impact: 'TODO: ej. Lighthouse 100/100/100/100 · TODO KB de JS en la portada'
+repo: 'https://github.com/oscarblanco86/blog-coderhn' # TODO: verificar que sea público
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Astro
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "El blog que estás leyendo" (meta)
+   Explicar este mismo repo: content collections con esquema Zod,
+   `draft: true` que solo aparece en dev, pilares como rutas dinámicas,
+   componente Terminal de la portada, RSS y sitemap.
+   🎬 Video (8–10 min): gancho "este video trata del sitio donde está
+   el post que lo acompaña". Recorrido por el repo + cambiar algo en
+   vivo y verlo en el navegador.
+
+B) DEMOSTRAR HABILIDAD — "Islas: JS solo donde hace falta"
+   Página con una isla React (client:visible vs client:load vs
+   client:idle); medir JS enviado y Lighthouse en cada variante.
+   🎬 Video (6–8 min): pestaña Network en pantalla; el JS aparece
+   solo al hacer scroll hasta la isla. Tabla de métricas al final.
+
+C) ÚTIL PARA EL USUARIO — "Tu portafolio en 10 minutos"
+   Plantilla clonable de portafolio/blog de dev con despliegue en
+   Netlify o Cloudflare Pages.
+   🎬 Video (5 min): cronómetro; del `git clone` a la URL pública.
+
+Recomendada: A en el post (es portafolio puro) + B como sección/video.
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Astro (en una frase)
+
+TODO: un blog es contenido; no necesita un framework de UI en el cliente para mostrar texto.
+
+{/* 🎬 Escena: Lighthouse del blog en 100 + pestaña Network con casi nada de JS. */}
+
+## 2. La arquitectura del blog
+
+```text
+src/
+├── content/blog/es/     → posts en español (MDX; archivos con _ nunca se publican)
+├── content/blog/en/     → posts en inglés, mismo slug = traducción
+├── content.config.ts    → esquema Zod del frontmatter
+├── i18n/ui.ts           → textos de la interfaz y rutas por idioma
+├── lib/posts.ts         → getPosts(lang): oculta borradores en producción
+├── views/               → páginas compartidas por ambos idiomas
+└── components/          → Terminal, EngineeringSummary, ThemeToggle, LangSwitch
+```
+
+## 3. Borradores que nunca llegan a producción
+
+```ts
+// src/lib/posts.ts
+const isVisible = (post: Post) => import.meta.env.DEV || !post.data.draft;
+
+export async function getPosts(lang: Lang) {
+	const posts = await getCollection('blog', (p) => postLang(p) === lang && isVisible(p));
+	return posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+}
+```
+
+TODO: explicar por qué filtrar en un solo lugar evita fugas (RSS, sitemap, portada).
+
+{/* 🎬 Escena: `bun run dev` muestra el borrador; `bun run build` no lo genera. */}
+
+## 4. Dos idiomas sin librerías
+
+TODO: español en la raíz e inglés bajo `/en/`; traducciones emparejadas por slug; detección del
+idioma del navegador que solo redirige si existe la página traducida; etiquetas `hreflang`.
+
+{/* 🎬 Escena: cambiar el idioma del navegador y ver la redirección; luego el selector ES·EN. */}
+
+## 5. Esquema tipado del frontmatter
+
+TODO: mostrar `content.config.ts` y el error que da Astro si falta un campo.
+
+## 6. Islas (cuando sí necesito JavaScript)
+
+TODO: ejemplo con `client:visible` y tabla de KB enviados.
+
+## 7. Resultados
+
+| Métrica | Valor |
+| ------- | ----- |
+| Lighthouse | TODO |
+| JS en portada | TODO |
+| Tiempo de build | TODO |
+
+## 8. Repositorio
+
+TODO

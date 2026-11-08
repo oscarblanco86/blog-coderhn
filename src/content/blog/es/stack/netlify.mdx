@@ -1,0 +1,108 @@
+---
+title: 'Netlify: headers, caché y seguridad para sacar A+ (no solo "subir la carpeta dist")'
+description: 'Cómo despliego sitios estáticos en Netlify con cabeceras de seguridad, caché inmutable, redirecciones y deploy previews, midiendo el resultado.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: backend
+tags: ['serie-mi-stack', 'netlify', 'hosting', 'seguridad', 'performance']
+draft: true
+summary:
+  stack: ['Netlify', 'Astro', 'netlify.toml']
+  complexity: baja
+  role: 'Autor'
+  impact: 'TODO: ej. Mozilla Observatory F → A+ · TTFB TODO ms'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Netlify
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Deploy previews como herramienta de revisión"
+   Cada PR genera una URL; usarla para que alguien no técnico (cliente,
+   familia) revise cambios antes de publicar. Sumar Netlify Forms o una
+   Function pequeña (contador o formulario de contacto) sin backend.
+   🎬 Video (5–6 min): abrir un PR → la URL aparece sola → mandarla por
+   WhatsApp → el "cliente" comenta → merge → producción.
+
+B) DEMOSTRAR HABILIDAD — "De F a A+ en seguridad, medido"
+   netlify.toml / _headers con CSP, HSTS, X-Content-Type-Options,
+   Permissions-Policy; caché immutable para assets con hash y no-cache
+   para HTML; redirecciones 301 limpias. Medir con Mozilla Observatory,
+   securityheaders.com y Lighthouse antes/después.
+   🎬 Video (6–8 min): gancho — nota "F" en pantalla grande del sitio
+   recién desplegado. Agregar cabeceras una por una y re-escanear.
+   Explicar qué ataque evita cada una con un ejemplo de 10 segundos.
+
+C) ÚTIL PARA EL USUARIO — "Hosting gratis con dominio propio"
+   Plan gratuito: límites reales, dominio comprado en Hostinger
+   apuntando a Netlify, HTTPS automático, subdominios (blog., app.).
+   🎬 Video (5 min): del dominio recién comprado a HTTPS funcionando.
+   Conecta con el post de Hostinger.
+
+Recomendada: B (encaja con el pilar de calidad y es medible).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Netlify (en una frase)
+
+TODO: para sitios estáticos me da despliegue continuo, previews por PR y CDN sin administrar
+servidores.
+
+{/* 🎬 Escena: escaneo de Mozilla Observatory con nota F. */}
+
+## 2. El despliegue mínimo
+
+```toml
+# netlify.toml
+[build]
+  command = "bun run build"
+  publish = "dist"
+```
+
+## 3. Cabeceras de seguridad
+
+```toml
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Content-Security-Policy = "TODO: definir según los scripts reales (Cloudflare Analytics, etc.)"
+```
+
+{/* 🎬 Escena: re-escaneo después de cada cabecera, la nota sube. */}
+
+## 4. Caché: inmutable para assets, fresco para HTML
+
+```toml
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+```
+
+TODO: explicar por qué funciona (nombres de archivo con hash).
+
+## 5. Redirecciones y deploy previews
+
+TODO: `_redirects`, dominio canónico, y cómo uso las previews para revisar.
+
+## 6. Resultados
+
+| Métrica | Antes | Después |
+| ------- | ----- | ------- |
+| Mozilla Observatory | TODO | TODO |
+| securityheaders.com | TODO | TODO |
+| Lighthouse Best Practices | TODO | TODO |
+
+## 7. Errores que cometí
+
+- TODO: CSP demasiado estricta que rompe el analytics / cachear el HTML como inmutable.
+
+## 8. Repositorio
+
+TODO

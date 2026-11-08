@@ -1,38 +1,31 @@
-/* Tema "terminal": oscuro por defecto, claro si el sistema lo prefiere. */
+/* Tema "terminal" con modo claro, oscuro o automático.
+ * Cada token usa light-dark(claro, oscuro); el valor lo decide `color-scheme`:
+ *   - sin data-theme → sigue al sistema (auto)
+ *   - data-theme="light" | "dark" en <html> → fijado por el usuario (ver ThemeToggle.astro)
+ */
 
 :root {
-	--bg: #0d1117;
-	--bg-soft: #161b22;
-	--bg-elev: #1c2230;
-	--border: #2a3240;
-	--text: #d6dde8;
-	--text-muted: #8b96a8;
-	--heading: #f2f5fa;
-	--accent: #3fb950; /* verde terminal */
-	--accent-2: #58a6ff; /* azul enlaces */
-	--warn: #d29922;
-	--code-bg: #0a0e14;
+	color-scheme: light dark;
+	--bg: light-dark(#fbfcfd, #0d1117);
+	--bg-soft: light-dark(#f1f4f8, #161b22);
+	--bg-elev: light-dark(#ffffff, #1c2230);
+	--border: light-dark(#d8dee8, #2a3240);
+	--text: light-dark(#2a3140, #d6dde8);
+	--text-muted: light-dark(#5e6a7d, #8b96a8);
+	--heading: light-dark(#0d1117, #f2f5fa);
+	--accent: light-dark(#1a7f37, #3fb950); /* verde terminal */
+	--accent-2: light-dark(#0969da, #58a6ff); /* azul enlaces */
+	--warn: light-dark(#9a6700, #d29922);
+	--code-bg: light-dark(#0d1117, #0a0e14);
 	--radius: 10px;
 	--font-mono: ui-monospace, 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Consolas,
 		monospace;
-	color-scheme: dark;
 }
-
-@media (prefers-color-scheme: light) {
-	:root {
-		--bg: #fbfcfd;
-		--bg-soft: #f1f4f8;
-		--bg-elev: #ffffff;
-		--border: #d8dee8;
-		--text: #2a3140;
-		--text-muted: #5e6a7d;
-		--heading: #0d1117;
-		--accent: #1a7f37;
-		--accent-2: #0969da;
-		--warn: #9a6700;
-		--code-bg: #0d1117;
-		color-scheme: light;
-	}
+:root[data-theme='light'] {
+	color-scheme: light;
+}
+:root[data-theme='dark'] {
+	color-scheme: dark;
 }
 
 *,

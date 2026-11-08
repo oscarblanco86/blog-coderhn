@@ -1,0 +1,107 @@
+---
+title: 'Django listo para producción desde el día 1 (no después del primer incidente)'
+description: 'Las decisiones que tomo al crear cualquier proyecto Django: usuario personalizado, settings por entorno, tests con pytest y Docker.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: backend
+tags: ['serie-mi-stack', 'python', 'django', 'backend']
+draft: true
+summary:
+  stack: ['Python', 'Django', 'PostgreSQL', 'pytest', 'Docker']
+  complexity: media
+  coverage: 'TODO (pytest-django)'
+  role: 'Autor'
+  impact: 'TODO: ej. plantilla usada en N proyectos · 0 migraciones dolorosas de User'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Python + Django
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Nada de blogs ni encuestas"
+   Construir algo local y concreto: inventario y ventas para una
+   pulpería/tienda de barrio, o un registro de carreras de un club que
+   usa run-science para calcular VDOT de cada atleta.
+   🎬 Video (10–12 min): gancho "el tutorial oficial te enseña una
+   app de encuestas; yo te enseño una que alguien pagaría". Mostrar
+   el problema real (cuaderno de ventas) → la app funcionando.
+
+B) DEMOSTRAR HABILIDAD — "Producción desde el día 1"
+   Custom User model antes de la primera migración, settings separados
+   (base/dev/prod) con variables de entorno, pytest-django + factory_boy,
+   Docker, `manage.py check --deploy` en verde.
+   🎬 Video (8–10 min): gancho "este error me costó un fin de semana"
+   (migrar a un User personalizado con datos en producción). Mostrar
+   `check --deploy` con 10 warnings → 0.
+
+C) ÚTIL PARA EL USUARIO — "El admin de Django como backoffice gratis"
+   Panel interno para un cliente no técnico en 30 min: list_filter,
+   search_fields, acciones masivas, exportar a CSV, permisos por grupo.
+   🎬 Video (6–8 min): cronómetro de 30 min en pantalla; al final un
+   "cliente" (actor/amigo) usando el panel sin ayuda.
+
+Recomendada: B en el post (plantilla reutilizable) + C como video corto.
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Django (en una frase)
+
+TODO: baterías incluidas — ORM, admin, auth y migraciones — para entregar rápido sin sacrificar
+estructura.
+
+{/* 🎬 Escena: historia del incidente con el modelo User. */}
+
+## 2. Crear el proyecto (bien)
+
+```bash
+uv init mi-proyecto && cd mi-proyecto   # TODO: o venv + pip, según tu flujo
+uv add django psycopg[binary] django-environ
+uv add --dev pytest pytest-django factory-boy
+uv run django-admin startproject config .
+uv run python manage.py startapp accounts
+```
+
+## 3. Las 5 decisiones que tomo antes de la primera migración
+
+### 3.1 Custom User model
+
+```python
+# accounts/models.py
+from django.contrib.auth.models import AbstractUser
+
+class User(AbstractUser):
+    pass  # aunque esté vacío: cambiarlo después es doloroso
+```
+
+```python
+# config/settings/base.py
+AUTH_USER_MODEL = "accounts.User"
+```
+
+### 3.2 Settings por entorno
+
+### 3.3 Secretos fuera del código
+
+### 3.4 Tests con pytest desde el primer modelo
+
+### 3.5 `check --deploy` en CI
+
+```bash
+python manage.py check --deploy --settings=config.settings.prod
+```
+
+{/* 🎬 Escena: contador de warnings bajando hasta 0. */}
+
+## 4. Errores que cometí
+
+- TODO: `DEBUG=True` en producción / `SECRET_KEY` en el repo / User por defecto.
+
+## 5. Chuleta
+
+TODO: estructura de carpetas final.
+
+## 6. Repositorio
+
+TODO: plantilla con "Use this template" en GitHub.

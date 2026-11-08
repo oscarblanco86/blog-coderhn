@@ -1,17 +1,30 @@
 ---
 import { AUTHOR } from '../consts';
+import { localizePath, useTranslations, type Lang } from '../i18n/ui';
 import HeaderLink from './HeaderLink.astro';
+import LangSwitch from './LangSwitch.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+	lang: Lang;
+	altHref: string;
+}
+const { lang, altHref } = Astro.props;
+const t = useTranslations(lang);
+const href = (p: string) => localizePath(p, lang);
 ---
 
 <header>
 	<nav>
-		<a class="brand mono" href="/">
+		<a class="brand mono" href={href('/')}>
 			<span class="prompt">~/</span>coderhn<span class="dim">.dev</span><span class="cursor">_</span>
 		</a>
 		<div class="links">
-			<HeaderLink href="/blog">blog</HeaderLink>
-			<HeaderLink href="/pilares">pilares</HeaderLink>
-			<HeaderLink href="/about">about</HeaderLink>
+			<HeaderLink href={href('/blog')}>{t('nav.blog')}</HeaderLink>
+			<HeaderLink href={href('/pilares')}>{t('nav.pillars')}</HeaderLink>
+			<HeaderLink href={href('/about')}>{t('nav.about')}</HeaderLink>
+		</div>
+		<span class="tools">
 			<a class="gh" href={AUTHOR.github} target="_blank" rel="noopener" aria-label="GitHub">
 				<svg viewBox="0 0 16 16" aria-hidden="true" width="20" height="20"
 					><path
@@ -20,7 +33,9 @@ import HeaderLink from './HeaderLink.astro';
 					></path></svg
 				>
 			</a>
-		</div>
+			<LangSwitch lang={lang} altHref={altHref} />
+			<ThemeToggle lang={lang} />
+		</span>
 	</nav>
 </header>
 <style>
@@ -36,13 +51,13 @@ import HeaderLink from './HeaderLink.astro';
 		max-width: 1000px;
 		margin: auto;
 		padding: 0 16px;
-		height: 56px;
+		min-height: 56px;
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		gap: 1em;
+		gap: 0.25em;
 	}
 	.brand {
+		margin-right: auto;
 		color: var(--heading);
 		text-decoration: none;
 		font-weight: 700;
@@ -74,6 +89,12 @@ import HeaderLink from './HeaderLink.astro';
 		align-items: center;
 		gap: 0.25em;
 	}
+	.tools {
+		display: flex;
+		align-items: center;
+		gap: 0.35em;
+		margin-left: 0.25em;
+	}
 	.gh {
 		display: flex;
 		padding: 0.4em;
@@ -81,5 +102,17 @@ import HeaderLink from './HeaderLink.astro';
 	}
 	.gh:hover {
 		color: var(--accent);
+	}
+	/* Pantallas estrechas: marca + herramientas arriba, enlaces en una segunda fila. */
+	@media (max-width: 560px) {
+		nav {
+			flex-wrap: wrap;
+			padding: 6px 16px 4px;
+		}
+		.links {
+			order: 3;
+			width: 100%;
+			margin-left: -0.6em;
+		}
 	}
 </style>

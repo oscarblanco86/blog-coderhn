@@ -1,35 +1,5 @@
 ---
-import PostCard from '../../components/PostCard.astro';
-import { PILLARS } from '../../consts';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getPosts } from '../../lib/posts';
-
-const posts = await getPosts();
+import BlogIndexView from '../../views/BlogIndexView.astro';
 ---
 
-<BaseLayout title="Blog" description="Todos los artículos: casos de estudio, arquitectura y calidad de software.">
-	<h1><span class="mono prompt">$</span> ls ./blog</h1>
-	<nav class="filters mono" aria-label="Pilares">
-		{
-			Object.entries(PILLARS).map(([k, p]) => (
-				<a class="tag" href={`/pilares/${k}`}>
-					{p.icon} {p.short}
-				</a>
-			))
-		}
-	</nav>
-	{posts.length === 0 && <p class="muted">Todavía no hay artículos publicados.</p>}
-	{posts.map((post) => <PostCard post={post} />)}
-</BaseLayout>
-
-<style>
-	.prompt {
-		color: var(--accent);
-	}
-	.filters {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5em;
-		margin-bottom: 1em;
-	}
-</style>
+<BlogIndexView lang="es" />

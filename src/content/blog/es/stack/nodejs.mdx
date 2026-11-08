@@ -1,0 +1,112 @@
+---
+title: 'Node.js sin dependencias: lo que la plataforma ya trae y casi nadie usa'
+description: 'Servidor HTTP, tests, watch mode, variables de entorno y TypeScript usando solo Node.js moderno, sin instalar un solo paquete.'
+pubDate: '2026-11-08' # TODO: fecha real
+pillar: backend
+tags: ['serie-mi-stack', 'nodejs', 'javascript', 'backend']
+draft: true
+summary:
+  stack: ['Node.js 22+']
+  complexity: media
+  coverage: 'TODO (node:test)'
+  role: 'Autor'
+  impact: 'TODO: ej. API completa con 0 dependencias y node_modules vacío'
+repo: 'https://github.com/oscarblanco86/TODO'
+---
+
+{/*
+═══════════════════════════════════════════════════════════════════
+BORRADOR · Serie "Mi stack" · Node.js
+(Verificar versiones exactas de cada feature antes de publicar:
+--watch, --env-file, node:test, util.parseArgs, type stripping de TS.)
+
+3 PROPUESTAS
+
+A) EJEMPLO DIFERENTE — "Una CLI útil en vez de otra API de tareas"
+   Herramienta `npx` real: p. ej. buscar y borrar carpetas node_modules
+   viejas para liberar disco, mostrando cuántos GB recuperas. Solo
+   built-ins (fs/promises, parseArgs, readline).
+   🎬 Video (5–6 min): gancho "liberé 37 GB de mi disco con 80 líneas
+   de Node". Mostrar el número final grande en pantalla.
+
+B) DEMOSTRAR HABILIDAD — "Node sin dependencias"
+   Construir una API pequeña solo con node:http, node:test, --watch,
+   --env-file y TypeScript nativo. Explicar qué resuelve cada librería
+   que normalmente instalamos y cuándo SÍ conviene instalarla.
+   🎬 Video (8 min): empezar con `ls node_modules` → "no existe".
+   Contador de dependencias en una esquina que se queda en 0.
+
+C) ÚTIL PARA EL USUARIO — "Mi API se congela: el event loop bloqueado"
+   Reproducir un bloqueo del event loop (JSON gigante, crypto síncrono),
+   diagnosticarlo con --inspect / Chrome DevTools y arreglarlo con
+   streams o worker_threads.
+   🎬 Video (6–8 min): dos pestañas haciendo peticiones; una se congela.
+   Flame graph en pantalla señalando la función culpable.
+
+Recomendada: B (muestra dominio de la plataforma, no solo de librerías).
+═══════════════════════════════════════════════════════════════════
+*/}
+
+## 1. Por qué Node.js (en una frase)
+
+TODO: el mismo lenguaje en frontend, backend y tooling; y hoy la plataforma trae de serie cosas
+por las que antes instalábamos cinco paquetes.
+
+{/* 🎬 Escena: package.json típico con 30 dependencias vs. uno vacío. */}
+
+## 2. Lo que antes instalabas y ahora no
+
+| Antes | Ahora (built-in) |
+| ----- | ---------------- |
+| nodemon | `node --watch` |
+| dotenv | `node --env-file=.env` |
+| jest / mocha | `node:test` |
+| yargs / commander | `util.parseArgs` |
+| ts-node | TypeScript nativo (TODO: verificar versión) |
+
+## 3. Una API con cero dependencias
+
+```ts
+// server.ts
+import { createServer } from 'node:http';
+
+const server = createServer((req, res) => {
+	if (req.url === '/health') {
+		res.writeHead(200, { 'content-type': 'application/json' });
+		return res.end(JSON.stringify({ ok: true }));
+	}
+	res.writeHead(404).end();
+});
+
+server.listen(Number(process.env.PORT ?? 3000));
+```
+
+```ts
+// server.test.ts
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+
+test('GET /health responde ok', async () => {
+	// TODO
+	assert.ok(true);
+});
+```
+
+```bash
+node --watch --env-file=.env server.ts
+node --test
+```
+
+{/* 🎬 Escena: guardar archivo y ver el reinicio automático sin nodemon. */}
+
+## 4. Cuándo SÍ instalar una librería
+
+TODO: criterio propio (validación de esquemas, ORM, auth…).
+
+## 5. Errores que cometí
+
+- TODO
+
+## 6. Repositorio
+
+TODO
