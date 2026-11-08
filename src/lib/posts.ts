@@ -12,10 +12,17 @@ export const postSlug = (post: Post): string => post.id.split('/').slice(1).join
 export const postUrl = (post: Post): string => localizePath(`/blog/${postSlug(post)}/`, postLang(post));
 
 /**
- * true en `astro dev` y en los deploys de vista previa de Netlify (rama `preview` y PRs),
- * donde netlify.toml define PUBLIC_SHOW_DRAFTS=true. Nunca en producción.
+ * Borradores visibles en `astro dev` y en las vistas previas de Netlify (rama `preview` y PRs).
+ * Netlify define CONTEXT en cada build: "production", "branch-deploy" o "deploy-preview".
+ * En producción nunca se muestran, aunque PUBLIC_SHOW_DRAFTS esté definida por error.
+ * PUBLIC_SHOW_DRAFTS (true/True/1) sirve para probarlo en local: PUBLIC_SHOW_DRAFTS=true bun run build
  */
-export const SHOW_DRAFTS = import.meta.env.DEV || import.meta.env.PUBLIC_SHOW_DRAFTS === 'true';
+const NETLIFY_CONTEXT = process.env.CONTEXT ?? '';
+const IS_NETLIFY_PREVIEW = NETLIFY_CONTEXT === 'branch-deploy' || NETLIFY_CONTEXT === 'deploy-preview';
+const FLAG_ON = /^(true|1)$/i.test(String(import.meta.env.PUBLIC_SHOW_DRAFTS ?? ''));
+
+export const SHOW_DRAFTS =
+	import.meta.env.DEV || (NETLIFY_CONTEXT !== 'production' && (IS_NETLIFY_PREVIEW || FLAG_ON));
 
 const isVisible = (post: Post) => SHOW_DRAFTS || !post.data.draft;
 

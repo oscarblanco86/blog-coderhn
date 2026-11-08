@@ -3,12 +3,6 @@
   command = "bun run build"
   publish = "dist"
 
-# Los borradores (draft: true) solo se publican en las vistas previas:
-#  - Branch deploys → la rama `preview` (https://preview--<sitio>.netlify.app)
-#  - Deploy previews → cada PR
-# Producción (main) NUNCA define esta variable.
-[context.branch-deploy.environment]
-  PUBLIC_SHOW_DRAFTS = "true"
-
-[context.deploy-preview.environment]
-  PUBLIC_SHOW_DRAFTS = "true"
+# Borradores (draft: true): se muestran solos en los contextos "branch-deploy"
+# (rama `preview`) y "deploy-preview" (PRs), usando la variable CONTEXT que
+# Netlify define en cada build. En "production" nunca. Ver src/lib/posts.ts.
