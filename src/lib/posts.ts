@@ -13,16 +13,21 @@ export const postUrl = (post: Post): string => localizePath(`/blog/${postSlug(po
 
 /**
  * Borradores visibles en `astro dev` y en las vistas previas de Netlify (rama `preview` y PRs).
- * Netlify define CONTEXT en cada build: "production", "branch-deploy" o "deploy-preview".
- * En producción nunca se muestran, aunque PUBLIC_SHOW_DRAFTS esté definida por error.
+ * Netlify define CONTEXT ("production", "branch-deploy", "deploy-preview") y BRANCH en cada build.
+ * preview-blog.coderhn.dev es un sitio aparte cuya rama de producción es `preview`
+ * (CONTEXT=production, BRANCH=preview), así que la rama `preview` siempre muestra borradores.
+ * En el resto de builds de producción (rama main) nunca se muestran.
  * PUBLIC_SHOW_DRAFTS (true/True/1) sirve para probarlo en local: PUBLIC_SHOW_DRAFTS=true bun run build
  */
 const NETLIFY_CONTEXT = process.env.CONTEXT ?? '';
+const NETLIFY_BRANCH = process.env.BRANCH ?? '';
 const IS_NETLIFY_PREVIEW = NETLIFY_CONTEXT === 'branch-deploy' || NETLIFY_CONTEXT === 'deploy-preview';
 const FLAG_ON = /^(true|1)$/i.test(String(import.meta.env.PUBLIC_SHOW_DRAFTS ?? ''));
 
 export const SHOW_DRAFTS =
-	import.meta.env.DEV || (NETLIFY_CONTEXT !== 'production' && (IS_NETLIFY_PREVIEW || FLAG_ON));
+	import.meta.env.DEV ||
+	NETLIFY_BRANCH === 'preview' ||
+	(NETLIFY_CONTEXT !== 'production' && (IS_NETLIFY_PREVIEW || FLAG_ON));
 
 const isVisible = (post: Post) => SHOW_DRAFTS || !post.data.draft;
 

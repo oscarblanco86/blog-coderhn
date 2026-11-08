@@ -3,6 +3,8 @@
   command = "bun run build"
   publish = "dist"
 
-# Borradores (draft: true): se muestran solos en los contextos "branch-deploy"
-# (rama `preview`) y "deploy-preview" (PRs), usando la variable CONTEXT que
-# Netlify define en cada build. En "production" nunca. Ver src/lib/posts.ts.
+# Borradores (draft: true), según las variables BRANCH y CONTEXT que Netlify define en cada build:
+#  - Rama `preview` → sí (sitio aparte preview-blog.coderhn.dev, donde es su rama de producción)
+#  - Contextos "branch-deploy" y "deploy-preview" (PRs) → sí
+#  - Producción en `main` (blog.coderhn.dev) → nunca
+# Ver src/lib/posts.ts.
