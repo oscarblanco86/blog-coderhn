@@ -21,7 +21,7 @@ cp src/content/blog/_plantilla.mdx src/content/blog/es/mi-nuevo-post.mdx   # →
 cp src/content/blog/_plantilla.mdx src/content/blog/en/mi-nuevo-post.mdx   # → /en/blog/mi-nuevo-post/
 ```
 
-1. Rellena el frontmatter: `pillar` (`backend` | `frontend` | `calidad` | `opensource`), `tags` y el
+1. Rellena el frontmatter: `pillar` (`backend` | `frontend` | `calidad` | `opensource` | `odoo` | `ciberseguridad`), `tags` y el
    bloque `summary` (es la ficha **Engineering Summary** que aparece al inicio del post).
 2. Sigue la estructura: Problema → Restricciones → Arquitectura → Código clave → Resultados → Repo.
 3. Mientras tenga `draft: true` solo se verá en `bun run dev`. Quítalo para publicar (en cada idioma

@@ -26,7 +26,7 @@ const es = {
 
 	'home.h1': 'Ingeniería de soluciones reales, con rigor de calidad.',
 	'home.lead':
-		'Escribo casos de estudio sobre <strong>arquitectura backend y DevOps</strong>, <strong>rendimiento web</strong> y <strong>gestión de calidad (ISO 9000)</strong> aplicada al software: el problema, las restricciones, la arquitectura, el código y las métricas.',
+		'Escribo casos de estudio sobre <strong>arquitectura backend y DevOps</strong>, <strong>rendimiento web</strong>, <strong>gestión de calidad (ISO 9000)</strong>, <strong>Odoo</strong> y <strong>ciberseguridad</strong> aplicadas al software: el problema, las restricciones, la arquitectura, el código y las métricas.',
 	'home.pillars': './pilares',
 	'home.recent': './recientes',
 	'home.empty': 'Primer artículo en camino.',
@@ -37,7 +37,7 @@ const es = {
 	'blog.filters': 'Pilares',
 
 	'pillars.title': 'Pilares',
-	'pillars.description': 'Las cuatro áreas sobre las que escribo.',
+	'pillars.description': 'Las seis áreas sobre las que escribo.',
 	'pillars.articles': 'artículos',
 	'pillars.soon': '// próximamente',
 
@@ -79,7 +79,7 @@ const en: Record<UIKey, string> = {
 
 	'home.h1': 'Engineering real-world solutions, with quality rigor.',
 	'home.lead':
-		'I write case studies on <strong>backend architecture and DevOps</strong>, <strong>web performance</strong> and <strong>quality management (ISO 9000)</strong> applied to software: the problem, the constraints, the architecture, the code and the metrics.',
+		'I write case studies on <strong>backend architecture and DevOps</strong>, <strong>web performance</strong>, <strong>quality management (ISO 9000)</strong>, <strong>Odoo</strong> and <strong>cybersecurity</strong> applied to software: the problem, the constraints, the architecture, the code and the metrics.',
 	'home.pillars': './pillars',
 	'home.recent': './recent',
 	'home.empty': 'First article on its way.',
@@ -90,7 +90,7 @@ const en: Record<UIKey, string> = {
 	'blog.filters': 'Pillars',
 
 	'pillars.title': 'Pillars',
-	'pillars.description': 'The four areas I write about.',
+	'pillars.description': 'The six areas I write about.',
 	'pillars.articles': 'articles',
 	'pillars.soon': '// coming soon',
 

@@ -56,6 +56,24 @@ export const PILLARS = {
 			en: 'Libraries, tools and apps with impact: sports science, education and more.',
 		},
 	},
+	odoo: {
+		short: 'odoo',
+		icon: '🧩',
+		label: { es: 'Odoo & ERP', en: 'Odoo & ERP' },
+		description: {
+			es: 'Implementación y desarrollo de módulos en Odoo: ORM, vistas, seguridad y procesos de negocio reales.',
+			en: 'Implementing and developing Odoo modules: ORM, views, security and real business processes.',
+		},
+	},
+	ciberseguridad: {
+		short: 'ciberseguridad',
+		icon: '🛡️',
+		label: { es: 'Ciberseguridad', en: 'Cybersecurity' },
+		description: {
+			es: 'Seguridad aplicada al desarrollo y la infraestructura: modelado de amenazas, OWASP, hardening y laboratorios.',
+			en: 'Security applied to development and infrastructure: threat modeling, OWASP, hardening and labs.',
+		},
+	},
 } as const;
 
 export type PillarKey = keyof typeof PILLARS;

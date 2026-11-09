@@ -1,0 +1,182 @@
+---
+title: 'Odoo for developers: what it is and how to think in modules'
+description: 'Introducing the Odoo pillar: how it is built under the hood (ORM, modules, views and permissions) and a minimal first module explained piece by piece.'
+pubDate: '2026-11-09'
+pillar: odoo
+tags: ['odoo', 'erp', 'python', 'postgresql', 'introduction']
+draft: true
+summary:
+  stack: ['Odoo', 'Python', 'PostgreSQL', 'XML']
+  complexity: baja
+  role: 'Author'
+  impact: 'A mental model of Odoo for a backend developer and a minimal working module'
+---
+
+{/*
+DRAFT · English translation of es/odoo-introduccion.mdx.
+Keep `draft: true` until both versions are ready.
+*/}
+
+## 1. Why a pillar about Odoo
+
+Odoo is an open-source ERP: accounting, inventory, sales, purchasing, CRM, HR, website… all on
+the same database and the same framework. For a backend developer it is interesting for two
+reasons:
+
+- **It is a full framework**, not just a product. Underneath every app there is an ORM, a view
+  engine, a permission system and an inheritance mechanism that lets you change anything without
+  touching the original code.
+- **It forces you to think about the business.** An Odoo module is worthless if you don't
+  understand the process it automates: how invoicing works, how stock moves, who approves what.
+
+TODO: your experience — what led you to learn Odoo and what surprised you at first.
+
+In this pillar I'll document what I'm learning: module development, integrations with other
+systems, performance and deployment, using the same case-study format as the rest of the blog.
+
+## 2. How Odoo is built
+
+```text
+[Browser] ──HTTP/JSON-RPC──▶ [Odoo server (Python)] ──▶ [PostgreSQL]
+                                  │
+                                  ├── ORM (models.Model)
+                                  ├── Views (XML) + web client (OWL)
+                                  ├── Security (groups, ACLs, record rules)
+                                  └── Modules (addons) ← this is where you work
+```
+
+The pieces you'll touch most:
+
+| Piece | What it is | Where it lives |
+| --- | --- | --- |
+| **Module (addon)** | A folder with a manifest; the unit of installation | `addons/my_module/` |
+| **Model** | A Python class the ORM turns into a PostgreSQL table | `models/*.py` |
+| **View** | XML definition of forms, lists, searches | `views/*.xml` |
+| **Action & menu** | How the user reaches your views | `views/*.xml` |
+| **Permissions** | Who can read, create, write or delete each model | `security/*.csv` and `*.xml` |
+| **Inheritance** | Extending an existing model or view without modifying it | `_inherit`, `inherit_id` |
+
+The most important idea: **in Odoo you almost never edit another module's code.** You extend it.
+That way upgrades don't break your changes.
+
+## 3. A minimal module, piece by piece
+
+Structure:
+
+```text
+biblioteca/
+├── __init__.py
+├── __manifest__.py
+├── models/
+│   ├── __init__.py
+│   └── libro.py
+├── security/
+│   └── ir.model.access.csv
+└── views/
+    └── libro_views.xml
+```
+
+**The manifest** describes the module and declares which data files to load:
+
+```python
+# __manifest__.py
+{
+    'name': 'Library',
+    'version': '1.0.0',
+    'summary': 'Simple book catalog',
+    'depends': ['base'],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/libro_views.xml',
+    ],
+    'license': 'LGPL-3',
+    'application': True,
+}
+```
+
+**The model** is plain Python. The ORM creates the `biblioteca_libro` table and its columns:
+
+```python
+# models/libro.py
+from odoo import api, fields, models
+
+
+class Libro(models.Model):
+    _name = 'biblioteca.libro'
+    _description = 'Book'
+    _order = 'name'
+
+    name = fields.Char('Title', required=True)
+    autor = fields.Char('Author')
+    paginas = fields.Integer('Pages')
+    leido = fields.Boolean('Read', default=False)
+    resumen = fields.Text('Summary')
+    largo = fields.Boolean('Long', compute='_compute_largo', store=True)
+
+    @api.depends('paginas')
+    def _compute_largo(self):
+        for libro in self:
+            libro.largo = libro.paginas > 400
+```
+
+Note the `for libro in self` loop: Odoo methods receive a **recordset** (zero, one or many
+records), never a single record. It is the most common mistake when starting out.
+
+**Permissions.** Without this line the model exists but nobody can use it:
+
+```csv
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_libro_user,biblioteca.libro.user,model_biblioteca_libro,base.group_user,1,1,1,1
+```
+
+**Views, action and menu:**
+
+```xml
+<!-- views/libro_views.xml -->
+<odoo>
+    <record id="libro_view_list" model="ir.ui.view">
+        <field name="name">biblioteca.libro.list</field>
+        <field name="model">biblioteca.libro</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="autor"/>
+                <field name="paginas"/>
+                <field name="leido"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="libro_action" model="ir.actions.act_window">
+        <field name="name">Books</field>
+        <field name="res_model">biblioteca.libro</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="biblioteca_menu_root" name="Library"/>
+    <menuitem id="libro_menu" name="Books" parent="biblioteca_menu_root" action="libro_action"/>
+</odoo>
+```
+
+I didn't define a form view: Odoo generates a default one. Good enough to get started.
+
+> Before Odoo 18 the list view was called `<tree>` and `view_mode` used `tree,form`. If you
+> follow an older tutorial, that's the first difference you'll notice.
+
+## 4. Takeaways from this first contact
+
+- **Think in recordsets**, not individual objects.
+- **Extend, don't modify**: `_inherit` for models and `inherit_id` + XPath for views.
+- **Security is not optional**: every new model needs its `ir.model.access.csv`.
+  (This is where this pillar meets the cybersecurity one.)
+- **The module is the unit of deployment**: version it in git like any other project.
+
+## 5. What's coming in this pillar
+
+- Model and view inheritance without breaking upgrades.
+- Record rules (multi-company, per-user data) and common permission mistakes.
+- External integrations over XML-RPC / JSON-RPC.
+- Odoo in Docker for development and production.
+- Performance: the N+1 problem in the ORM and how to spot it.
+
+TODO: reorder based on what you're learning right now.

@@ -1,0 +1,142 @@
+---
+title: 'Ciberseguridad para desarrolladores: por dónde empezar'
+description: 'Introducción al pilar de ciberseguridad: los conceptos base, cómo pensar como atacante sobre tu propio código y un laboratorio seguro para practicar.'
+pubDate: '2026-11-09'
+pillar: ciberseguridad
+tags: ['ciberseguridad', 'owasp', 'linux', 'hardening', 'introduccion']
+draft: true
+summary:
+  stack: ['OWASP', 'Linux', 'Docker', 'Nmap']
+  complexity: baja
+  role: 'Autor'
+  impact: 'Mapa de conceptos base y un laboratorio aislado para practicar sin riesgos'
+---
+
+{/*
+BORRADOR · Pilar "Ciberseguridad"
+TODO antes de publicar:
+- Añadir en la sección 1 tu historia real: qué despertó tu interés y con qué recursos estás aprendiendo
+  (cursos, plataformas tipo CTF, certificaciones).
+- Verificar que la lista OWASP citada corresponde a la edición vigente.
+*/}
+
+## 1. Por qué un pilar sobre ciberseguridad
+
+Escribir software que funciona es la mitad del trabajo. La otra mitad es que siga funcionando
+cuando alguien intenta que no lo haga. Como desarrollador backend, cada endpoint, cada formulario
+y cada servidor que despliego es una superficie de ataque, y prefiero entenderla antes de que
+alguien más lo haga por mí.
+
+TODO: tu experiencia — qué te llevó a estudiar ciberseguridad y qué estás practicando.
+
+Este pilar no es de "hacking" espectacular. Es seguridad aplicada a lo que construyo: código,
+infraestructura y procesos. Encaja de forma natural con el de calidad: un fallo de seguridad
+es, al final, un defecto que llegó a producción.
+
+## 2. Los conceptos base
+
+**La tríada CIA** — lo que la seguridad intenta proteger:
+
+| Propiedad | Pregunta | Ejemplo de fallo |
+| --- | --- | --- |
+| **Confidencialidad** | ¿Solo lo ve quien debe? | Una API que devuelve datos de otro usuario cambiando un ID |
+| **Integridad** | ¿Nadie lo modificó sin permiso? | Un precio alterado en el cliente y aceptado por el servidor |
+| **Disponibilidad** | ¿Está ahí cuando se necesita? | Un endpoint sin límite de peticiones que tumba el servidor |
+
+**Vocabulario mínimo:**
+
+- **Vulnerabilidad**: una debilidad (un input sin validar, una versión sin parchear).
+- **Amenaza**: quién o qué podría aprovecharla.
+- **Riesgo**: probabilidad × impacto. Es lo que realmente se gestiona.
+- **Superficie de ataque**: todo lo que un atacante puede tocar — puertos, endpoints, dependencias, personas.
+- **Defensa en profundidad**: varias capas, asumiendo que alguna va a fallar.
+- **Mínimo privilegio**: cada usuario, servicio y token con solo los permisos que necesita.
+
+## 3. Pensar como atacante sobre tu propio sistema
+
+El **modelado de amenazas** es la herramienta más rentable que conozco. No requiere software,
+solo cuatro preguntas sobre cualquier diseño:
+
+1. ¿Qué estamos construyendo?
+2. ¿Qué puede salir mal?
+3. ¿Qué vamos a hacer al respecto?
+4. ¿Lo hicimos bien?
+
+Para la pregunta 2, **STRIDE** ayuda a no dejarse nada:
+
+| Letra | Amenaza | Propiedad que rompe |
+| --- | --- | --- |
+| S | Suplantación (*Spoofing*) | Autenticación |
+| T | Manipulación (*Tampering*) | Integridad |
+| R | Repudio (*Repudiation*) | No repudio (logs, trazabilidad) |
+| I | Divulgación de información | Confidencialidad |
+| D | Denegación de servicio | Disponibilidad |
+| E | Elevación de privilegios | Autorización |
+
+## 4. OWASP Top 10: el mapa de la seguridad web
+
+El **OWASP Top 10** resume las categorías de riesgo más frecuentes en aplicaciones web. Las que
+más me encuentro como desarrollador backend:
+
+- **Control de acceso roto**: el usuario A puede leer o modificar recursos del usuario B.
+- **Inyección**: SQL, comandos del sistema, plantillas. La solución casi siempre es no
+  construir consultas concatenando texto.
+- **Configuración insegura**: modo debug en producción, credenciales por defecto, cabeceras faltantes.
+- **Componentes vulnerables**: dependencias sin actualizar.
+- **Fallos de autenticación**: contraseñas débiles permitidas, sesiones que nunca expiran.
+
+Un ejemplo de inyección SQL y su corrección:
+
+```python
+# ❌ Vulnerable: el input forma parte del SQL
+cursor.execute(f"SELECT * FROM usuarios WHERE email = '{email}'")
+# email = "' OR '1'='1"  →  devuelve todos los usuarios
+
+# ✅ Seguro: consulta parametrizada, el input es solo un valor
+cursor.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
+```
+
+## 5. Un laboratorio seguro para practicar
+
+La regla de oro: **solo se prueba contra sistemas propios o con autorización explícita.** Para
+eso existe el laboratorio. Un punto de partida con Docker, accesible solo desde tu máquina:
+
+```yaml
+# docker-compose.yml — laboratorio local, NUNCA expuesto a internet
+services:
+  juice-shop:
+    image: bkimminich/juice-shop   # app web deliberadamente vulnerable (OWASP)
+    ports:
+      - '127.0.0.1:3000:3000'      # escucha solo en localhost
+```
+
+Y un primer reconocimiento de tu propio servidor para ver qué expone:
+
+```bash
+# ¿Qué puertos tiene abiertos mi VPS? (solo en máquinas propias)
+nmap -sV -Pn mi-servidor.ejemplo.com
+
+# ¿Qué está escuchando en esta máquina?
+sudo ss -tulpn
+```
+
+Si `nmap` encuentra algo que no sabías que estaba abierto, ya aprendiste algo importante.
+
+## 6. Hardening básico que aplico en cualquier servidor
+
+- [ ] Acceso SSH solo con llave, sin login de root (`PermitRootLogin no`, `PasswordAuthentication no`).
+- [ ] Firewall que niega por defecto (`ufw default deny incoming`) y abre solo lo necesario.
+- [ ] Actualizaciones de seguridad automáticas (`unattended-upgrades` en Ubuntu/Debian).
+- [ ] Secretos fuera del repositorio (variables de entorno o un gestor de secretos).
+- [ ] Dependencias auditadas en CI (`npm audit`, `pip-audit`, Dependabot).
+- [ ] Copias de seguridad probadas: un backup que nunca se restauró no es un backup.
+
+## 7. Qué viene en este pilar
+
+- Modelado de amenazas aplicado a un proyecto real de este blog.
+- Seguridad en Odoo: grupos, ACL y reglas de registro bien hechas.
+- Hardening de un VPS paso a paso, con antes y después medidos.
+- Seguridad en la cadena de CI/CD: secretos, permisos de GitHub Actions y dependencias.
+- Notas de laboratorio y retos tipo CTF resueltos.
+
+TODO: ordenar según lo que estés aprendiendo ahora mismo.

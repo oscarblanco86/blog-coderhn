@@ -1,0 +1,185 @@
+---
+title: 'Odoo para desarrolladores: qué es y cómo pensar en módulos'
+description: 'Introducción al pilar Odoo: cómo está construido por dentro (ORM, módulos, vistas y permisos) y un primer módulo mínimo explicado pieza a pieza.'
+pubDate: '2026-11-09'
+pillar: odoo
+tags: ['odoo', 'erp', 'python', 'postgresql', 'introduccion']
+draft: true
+summary:
+  stack: ['Odoo', 'Python', 'PostgreSQL', 'XML']
+  complexity: baja
+  role: 'Autor'
+  impact: 'Mapa mental de Odoo para un desarrollador backend y un módulo mínimo funcional'
+---
+
+{/*
+BORRADOR · Pilar "Odoo & ERP"
+TODO antes de publicar:
+- Añadir en la sección 1 tu historia real: cómo llegaste a Odoo y qué problema estabas resolviendo.
+- Confirmar la versión de Odoo con la que trabajas y ajustar el ejemplo si hace falta.
+*/}
+
+## 1. Por qué un pilar sobre Odoo
+
+Odoo es un ERP de código abierto: contabilidad, inventario, ventas, compras, CRM, RRHH, sitio
+web… todo sobre la misma base de datos y el mismo framework. Para un desarrollador backend es
+interesante por dos razones:
+
+- **Es un framework completo**, no solo un producto. Debajo de cada aplicación hay un ORM, un
+  motor de vistas, un sistema de permisos y un mecanismo de herencia que te deja modificar
+  cualquier cosa sin tocar el código original.
+- **Obliga a pensar en el negocio.** Un módulo de Odoo no vale nada si no entiendes el proceso
+  que automatiza: cómo se factura, cómo se mueve el inventario, quién aprueba qué.
+
+TODO: tu experiencia — qué te llevó a aprender Odoo y qué te sorprendió al principio.
+
+En este pilar voy a documentar lo que voy aprendiendo: desarrollo de módulos, integración con
+otros sistemas, rendimiento y despliegue, con el mismo formato de caso de estudio que el resto
+del blog.
+
+## 2. Cómo está construido Odoo
+
+```text
+[Navegador] ──HTTP/JSON-RPC──▶ [Servidor Odoo (Python)] ──▶ [PostgreSQL]
+                                   │
+                                   ├── ORM (models.Model)
+                                   ├── Vistas (XML) + cliente web (OWL)
+                                   ├── Seguridad (grupos, ACL, reglas de registro)
+                                   └── Módulos (addons) ← aquí trabajas tú
+```
+
+Las piezas que más vas a tocar:
+
+| Pieza | Qué es | Dónde vive |
+| --- | --- | --- |
+| **Módulo (addon)** | Una carpeta con un manifiesto; la unidad de instalación | `addons/mi_modulo/` |
+| **Modelo** | Clase Python que el ORM convierte en tabla de PostgreSQL | `models/*.py` |
+| **Vista** | Definición en XML de formularios, listas, búsquedas | `views/*.xml` |
+| **Acción y menú** | Cómo llega el usuario a tus vistas | `views/*.xml` |
+| **Permisos** | Quién puede leer, crear, editar o borrar cada modelo | `security/*.csv` y `*.xml` |
+| **Herencia** | Extender un modelo o vista existente sin modificarlo | `_inherit`, `inherit_id` |
+
+La idea más importante: **en Odoo casi nunca editas el código de otro módulo.** Lo extiendes.
+Así las actualizaciones no rompen tus cambios.
+
+## 3. Un módulo mínimo, pieza a pieza
+
+Estructura:
+
+```text
+biblioteca/
+├── __init__.py
+├── __manifest__.py
+├── models/
+│   ├── __init__.py
+│   └── libro.py
+├── security/
+│   └── ir.model.access.csv
+└── views/
+    └── libro_views.xml
+```
+
+**El manifiesto** describe el módulo y declara qué archivos de datos cargar:
+
+```python
+# __manifest__.py
+{
+    'name': 'Biblioteca',
+    'version': '1.0.0',
+    'summary': 'Catálogo simple de libros',
+    'depends': ['base'],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/libro_views.xml',
+    ],
+    'license': 'LGPL-3',
+    'application': True,
+}
+```
+
+**El modelo** es Python puro. El ORM crea la tabla `biblioteca_libro` y sus columnas:
+
+```python
+# models/libro.py
+from odoo import api, fields, models
+
+
+class Libro(models.Model):
+    _name = 'biblioteca.libro'
+    _description = 'Libro'
+    _order = 'name'
+
+    name = fields.Char('Título', required=True)
+    autor = fields.Char()
+    paginas = fields.Integer()
+    leido = fields.Boolean(default=False)
+    resumen = fields.Text()
+    largo = fields.Boolean(compute='_compute_largo', store=True)
+
+    @api.depends('paginas')
+    def _compute_largo(self):
+        for libro in self:
+            libro.largo = libro.paginas > 400
+```
+
+Fíjate en el bucle `for libro in self`: en Odoo los métodos reciben un **recordset** (cero, uno o
+muchos registros), nunca un registro suelto. Es el error más común al empezar.
+
+**Los permisos.** Sin esta línea el modelo existe pero nadie puede usarlo:
+
+```csv
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_libro_user,biblioteca.libro.user,model_biblioteca_libro,base.group_user,1,1,1,1
+```
+
+**Las vistas, la acción y el menú:**
+
+```xml
+<!-- views/libro_views.xml -->
+<odoo>
+    <record id="libro_view_list" model="ir.ui.view">
+        <field name="name">biblioteca.libro.list</field>
+        <field name="model">biblioteca.libro</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="autor"/>
+                <field name="paginas"/>
+                <field name="leido"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="libro_action" model="ir.actions.act_window">
+        <field name="name">Libros</field>
+        <field name="res_model">biblioteca.libro</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="biblioteca_menu_root" name="Biblioteca"/>
+    <menuitem id="libro_menu" name="Libros" parent="biblioteca_menu_root" action="libro_action"/>
+</odoo>
+```
+
+No definí la vista de formulario: Odoo genera una por defecto. Suficiente para empezar.
+
+> En versiones anteriores a Odoo 18 la vista de lista se llamaba `<tree>` y `view_mode` usaba
+> `tree,form`. Si sigues un tutorial antiguo, ese es el primer cambio que vas a notar.
+
+## 4. Lo que me llevo de este primer contacto
+
+- **Piensa en recordsets**, no en objetos individuales.
+- **Extiende, no modifiques**: `_inherit` para modelos e `inherit_id` + XPath para vistas.
+- **La seguridad no es opcional**: cada modelo nuevo necesita su `ir.model.access.csv`.
+  (Aquí este pilar se cruza con el de ciberseguridad.)
+- **El módulo es la unidad de despliegue**: versiónalo en git como cualquier otro proyecto.
+
+## 5. Qué viene en este pilar
+
+- Herencia de modelos y vistas sin romper actualizaciones.
+- Reglas de registro (multiempresa, datos por usuario) y errores comunes de permisos.
+- Integraciones externas por XML-RPC / JSON-RPC.
+- Odoo en Docker para desarrollo y producción.
+- Rendimiento: el problema N+1 en el ORM y cómo detectarlo.
+
+TODO: ordenar según lo que estés aprendiendo ahora mismo.

@@ -1,0 +1,138 @@
+---
+title: 'Cybersecurity for developers: where to start'
+description: 'Introducing the cybersecurity pillar: the core concepts, how to think like an attacker about your own code and a safe lab to practice in.'
+pubDate: '2026-11-09'
+pillar: ciberseguridad
+tags: ['cybersecurity', 'owasp', 'linux', 'hardening', 'introduction']
+draft: true
+summary:
+  stack: ['OWASP', 'Linux', 'Docker', 'Nmap']
+  complexity: baja
+  role: 'Author'
+  impact: 'A map of the core concepts and an isolated lab to practice without risk'
+---
+
+{/*
+DRAFT · English translation of es/ciberseguridad-introduccion.mdx.
+Keep `draft: true` until both versions are ready.
+*/}
+
+## 1. Why a pillar about cybersecurity
+
+Writing software that works is half the job. The other half is making sure it keeps working when
+someone is trying to make it fail. As a backend developer, every endpoint, every form and every
+server I deploy is attack surface, and I'd rather understand it before someone else does it for me.
+
+TODO: your experience — what sparked your interest and what you're practicing.
+
+This pillar isn't about flashy "hacking". It's security applied to what I build: code,
+infrastructure and processes. It fits naturally with the quality pillar: a security flaw is,
+in the end, a defect that made it to production.
+
+## 2. The core concepts
+
+**The CIA triad** — what security tries to protect:
+
+| Property | Question | Example failure |
+| --- | --- | --- |
+| **Confidentiality** | Can only the right people see it? | An API that returns another user's data when you change an ID |
+| **Integrity** | Has nobody changed it without permission? | A price altered on the client and accepted by the server |
+| **Availability** | Is it there when it's needed? | An endpoint with no rate limit that takes the server down |
+
+**Minimum vocabulary:**
+
+- **Vulnerability**: a weakness (unvalidated input, an unpatched version).
+- **Threat**: who or what could exploit it.
+- **Risk**: likelihood × impact. This is what you actually manage.
+- **Attack surface**: everything an attacker can touch — ports, endpoints, dependencies, people.
+- **Defense in depth**: several layers, assuming one of them will fail.
+- **Least privilege**: every user, service and token gets only the permissions it needs.
+
+## 3. Thinking like an attacker about your own system
+
+**Threat modeling** is the most cost-effective tool I know. It needs no software, just four
+questions about any design:
+
+1. What are we building?
+2. What can go wrong?
+3. What are we going to do about it?
+4. Did we do a good job?
+
+For question 2, **STRIDE** helps you not miss anything:
+
+| Letter | Threat | Property it breaks |
+| --- | --- | --- |
+| S | Spoofing | Authentication |
+| T | Tampering | Integrity |
+| R | Repudiation | Non-repudiation (logs, traceability) |
+| I | Information disclosure | Confidentiality |
+| D | Denial of service | Availability |
+| E | Elevation of privilege | Authorization |
+
+## 4. OWASP Top 10: the map of web security
+
+The **OWASP Top 10** summarizes the most common risk categories in web applications. The ones
+I run into most as a backend developer:
+
+- **Broken access control**: user A can read or modify user B's resources.
+- **Injection**: SQL, OS commands, templates. The fix is almost always to stop building queries
+  by concatenating text.
+- **Security misconfiguration**: debug mode in production, default credentials, missing headers.
+- **Vulnerable components**: outdated dependencies.
+- **Authentication failures**: weak passwords allowed, sessions that never expire.
+
+An SQL injection example and its fix:
+
+```python
+# ❌ Vulnerable: the input becomes part of the SQL
+cursor.execute(f"SELECT * FROM users WHERE email = '{email}'")
+# email = "' OR '1'='1"  →  returns every user
+
+# ✅ Safe: parameterized query, the input is only a value
+cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+```
+
+## 5. A safe lab to practice in
+
+The golden rule: **only test systems you own or have explicit permission to test.** That's what
+a lab is for. A starting point with Docker, reachable only from your machine:
+
+```yaml
+# docker-compose.yml — local lab, NEVER exposed to the internet
+services:
+  juice-shop:
+    image: bkimminich/juice-shop   # deliberately vulnerable web app (OWASP)
+    ports:
+      - '127.0.0.1:3000:3000'      # listens on localhost only
+```
+
+And a first look at your own server to see what it exposes:
+
+```bash
+# Which ports does my VPS have open? (only on machines you own)
+nmap -sV -Pn my-server.example.com
+
+# What is listening on this machine?
+sudo ss -tulpn
+```
+
+If `nmap` finds something you didn't know was open, you've already learned something important.
+
+## 6. Basic hardening I apply to any server
+
+- [ ] SSH with keys only, no root login (`PermitRootLogin no`, `PasswordAuthentication no`).
+- [ ] A deny-by-default firewall (`ufw default deny incoming`) that opens only what's needed.
+- [ ] Automatic security updates (`unattended-upgrades` on Ubuntu/Debian).
+- [ ] Secrets outside the repository (environment variables or a secrets manager).
+- [ ] Dependencies audited in CI (`npm audit`, `pip-audit`, Dependabot).
+- [ ] Tested backups: a backup that was never restored is not a backup.
+
+## 7. What's coming in this pillar
+
+- Threat modeling applied to a real project from this blog.
+- Security in Odoo: groups, ACLs and record rules done right.
+- Hardening a VPS step by step, with before and after measured.
+- CI/CD supply-chain security: secrets, GitHub Actions permissions and dependencies.
+- Lab notes and solved CTF-style challenges.
+
+TODO: reorder based on what you're learning right now.
